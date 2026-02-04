@@ -24,6 +24,7 @@ import {
   Play,
   Zap
 } from "lucide-react"
+import { getFirstAvailableHeaders } from "@/lib/byok"
 
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 
@@ -90,8 +91,10 @@ export function AgentPanel({ investigationId }: AgentPanelProps) {
       }
 
       try {
+        const headers = getFirstAvailableHeaders()
         await fetch("/api/ocr", {
           method: "POST",
+          headers,
           body: formData,
         })
       } catch (error) {
