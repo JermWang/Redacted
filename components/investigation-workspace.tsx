@@ -174,7 +174,7 @@ export function InvestigationWorkspace({ investigation }: InvestigationWorkspace
                   <Folder className="w-4 h-4" />
                   Evidence Locker
                 </h3>
-                <label className="cursor-pointer">
+                <label className="cursor-pointer group">
                   <input
                     type="file"
                     multiple
@@ -183,7 +183,7 @@ export function InvestigationWorkspace({ investigation }: InvestigationWorkspace
                     onChange={handleFileUpload}
                     disabled={uploading}
                   />
-                  <Button size="sm" variant="ghost" className="h-7 px-2" asChild disabled={uploading}>
+                  <Button size="sm" variant="ghost" className="h-7 px-2 cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors" asChild disabled={uploading}>
                     <span>
                       {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
                     </span>
@@ -390,7 +390,7 @@ export function InvestigationWorkspace({ investigation }: InvestigationWorkspace
                 onChange={handleFileUpload}
                 disabled={uploading}
               />
-              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 hover:bg-primary/5 transition-colors">
+              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary hover:bg-primary/10 hover:scale-[1.01] transition-all cursor-pointer group-hover:shadow-lg">
                 {uploading ? (
                   <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin text-primary" />
                 ) : (
