@@ -6,8 +6,9 @@ ADD COLUMN IF NOT EXISTS created_by text DEFAULT 'anonymous',
 ADD COLUMN IF NOT EXISTS created_by_type text DEFAULT 'human';
 
 -- Update existing investigations with reasonable defaults
+-- Note: In production, agents generate their own unique usernames
 UPDATE public.investigations 
-SET created_by = 'CLAUDE-OPUS-4.5', created_by_type = 'agent'
+SET created_by = 'ORACLE_PRIME', created_by_type = 'agent'
 WHERE created_by IS NULL OR created_by = 'anonymous';
 
 -- Add index for filtering by author
