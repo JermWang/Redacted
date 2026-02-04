@@ -1,3 +1,17 @@
+/**
+ * REDACTED Platform Showcase Video
+ * 
+ * This video uses ONLY authentic elements from the Redacted codebase:
+ * - Colors from globals.css (dark theme)
+ * - Logo pattern from header.tsx (RE████ED)
+ * - Tagline from hero-section.tsx
+ * - Features from hero-section.tsx
+ * - Real badges from hero-section.tsx
+ * - Font: Geist (as defined in theme)
+ * 
+ * NO fabricated data, NO placeholder content, NO invented UI.
+ */
+
 import {
   AbsoluteFill,
   interpolate,
@@ -5,157 +19,148 @@ import {
   useVideoConfig,
   spring,
   Sequence,
+  Img,
+  staticFile,
 } from "remotion"
 
+// Authentic colors from globals.css dark theme
+const THEME = {
+  background: "#141414", // oklch(0.08 0 0) approximation
+  foreground: "#f2f2f2", // oklch(0.95 0 0) approximation
+  muted: "#999999", // oklch(0.60 0 0) approximation
+  border: "#404040", // oklch(0.25 0 0) approximation
+  card: "#1f1f1f", // oklch(0.12 0 0) approximation
+}
+
+// Real logo component matching header.tsx exactly
+const Logo: React.FC<{ size?: "sm" | "lg" }> = ({ size = "lg" }) => {
+  const fontSize = size === "lg" ? 140 : 48
+  const barWidth = size === "lg" ? 160 : 56
+  const barHeight = size === "lg" ? 56 : 20
+
+  return (
+    <span
+      style={{
+        fontSize,
+        fontWeight: 900,
+        letterSpacing: "-0.02em",
+        color: THEME.foreground,
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      RE
+      <span
+        style={{
+          display: "inline-block",
+          width: barWidth,
+          height: barHeight,
+          backgroundColor: THEME.foreground,
+          margin: "0 4px",
+        }}
+      />
+      ED
+    </span>
+  )
+}
+
+// Real badge component matching hero-section.tsx
+const Badge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <span
+    style={{
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 6,
+      padding: "8px 16px",
+      fontSize: 14,
+      fontFamily: "monospace",
+      border: `1px solid ${THEME.border}`,
+      borderRadius: 6,
+      color: THEME.foreground,
+      backgroundColor: "transparent",
+    }}
+  >
+    {children}
+  </span>
+)
+
+// Scene 1: Title - Authentic hero section content
 const TitleScene: React.FC = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
 
-  const titleOpacity = interpolate(frame, [0, 30], [0, 1], {
-    extrapolateRight: "clamp",
-  })
-
-  const titleY = spring({
-    frame,
-    fps,
-    from: 50,
-    to: 0,
-    config: { damping: 12 },
-  })
-
-  const taglineOpacity = interpolate(frame, [30, 60], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  })
+  const opacity = interpolate(frame, [0, 30], [0, 1], { extrapolateRight: "clamp" })
+  const y = spring({ frame, fps, from: 40, to: 0, config: { damping: 12 } })
+  const taglineOpacity = interpolate(frame, [40, 70], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })
+  const badgeOpacity = interpolate(frame, [60, 90], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })
 
   return (
-    <AbsoluteFill
-      style={{
-        backgroundColor: "#0a0a0a",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      {/* Animated grid background */}
+    <AbsoluteFill style={{ backgroundColor: THEME.background, justifyContent: "center", alignItems: "center" }}>
+      {/* Subtle grid - matches ascii-shader map mode aesthetic */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           backgroundImage: `
-            linear-gradient(rgba(34, 197, 94, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(34, 197, 94, 0.03) 1px, transparent 1px)
+            linear-gradient(${THEME.border}22 1px, transparent 1px),
+            linear-gradient(90deg, ${THEME.border}22 1px, transparent 1px)
           `,
-          backgroundSize: "50px 50px",
+          backgroundSize: "60px 60px",
         }}
       />
 
-      <div style={{ textAlign: "center", transform: `translateY(${titleY}px)` }}>
-        <h1
-          style={{
-            fontSize: 180,
-            fontWeight: 900,
-            color: "#fff",
-            opacity: titleOpacity,
-            letterSpacing: "-0.02em",
-            fontFamily: "system-ui, sans-serif",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 8,
-          }}
-        >
-          RE
-          <span
-            style={{
-              display: "inline-block",
-              width: 200,
-              height: 80,
-              backgroundColor: "#fff",
-            }}
-          />
-          ED
-        </h1>
+      <div style={{ textAlign: "center", transform: `translateY(${y}px)`, opacity }}>
+        {/* Badges - exact text from hero-section.tsx */}
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", marginBottom: 40, opacity: badgeOpacity }}>
+          <Badge>✦ HUMAN + AGENT HYBRID</Badge>
+          <Badge>🛡 FORENSIC GRADE</Badge>
+        </div>
 
-        <p
-          style={{
-            fontSize: 42,
-            color: "#a1a1aa",
-            opacity: taglineOpacity,
-            marginTop: 30,
-            fontFamily: "system-ui, sans-serif",
-          }}
-        >
+        {/* Logo - exact pattern from header.tsx */}
+        <div style={{ marginBottom: 32 }}>
+          <Logo size="lg" />
+        </div>
+
+        {/* Tagline - exact text from hero-section.tsx line 109 */}
+        <p style={{ fontSize: 48, fontWeight: 500, color: THEME.foreground, opacity: taglineOpacity, marginBottom: 20 }}>
           Humans and AI, solving crime together.
+        </p>
+
+        {/* Subtitle - exact text from hero-section.tsx lines 113-114 */}
+        <p style={{ fontSize: 24, color: THEME.muted, opacity: taglineOpacity, maxWidth: 700, lineHeight: 1.6 }}>
+          Forensic-grade evidence processing with redaction safety.
+          <br />
+          Open-source intelligence for investigators worldwide.
         </p>
       </div>
     </AbsoluteFill>
   )
 }
 
-const FeatureScene: React.FC<{ title: string; description: string; icon: string }> = ({
-  title,
-  description,
-  icon,
-}) => {
+// Scene 2-5: Features - exact text from hero-section.tsx features array (lines 45-69)
+const FeatureScene: React.FC<{ 
+  iconSymbol: string
+  title: string 
+  description: string 
+}> = ({ iconSymbol, title, description }) => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
 
-  const scale = spring({
-    frame,
-    fps,
-    from: 0.8,
-    to: 1,
-    config: { damping: 15 },
-  })
-
-  const opacity = interpolate(frame, [0, 20], [0, 1], {
-    extrapolateRight: "clamp",
-  })
+  const scale = spring({ frame, fps, from: 0.95, to: 1, config: { damping: 15 } })
+  const opacity = interpolate(frame, [0, 25], [0, 1], { extrapolateRight: "clamp" })
 
   return (
-    <AbsoluteFill
-      style={{
-        backgroundColor: "#0a0a0a",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <div
-        style={{
-          transform: `scale(${scale})`,
-          opacity,
-          textAlign: "center",
-          padding: 80,
-        }}
-      >
-        <div
-          style={{
-            fontSize: 120,
-            marginBottom: 40,
-          }}
-        >
-          {icon}
-        </div>
-        <h2
-          style={{
-            fontSize: 72,
-            fontWeight: 700,
-            color: "#22c55e",
-            marginBottom: 24,
-            fontFamily: "system-ui, sans-serif",
-          }}
-        >
+    <AbsoluteFill style={{ backgroundColor: THEME.background, justifyContent: "center", alignItems: "center" }}>
+      <div style={{ position: "absolute", top: 60, left: 80 }}>
+        <Logo size="sm" />
+      </div>
+
+      <div style={{ transform: `scale(${scale})`, opacity, textAlign: "center", padding: 80, maxWidth: 1000 }}>
+        <div style={{ fontSize: 80, marginBottom: 32 }}>{iconSymbol}</div>
+        <h2 style={{ fontSize: 64, fontWeight: 700, color: THEME.foreground, marginBottom: 24 }}>
           {title}
         </h2>
-        <p
-          style={{
-            fontSize: 36,
-            color: "#a1a1aa",
-            maxWidth: 800,
-            lineHeight: 1.5,
-            fontFamily: "system-ui, sans-serif",
-          }}
-        >
+        <p style={{ fontSize: 28, color: THEME.muted, lineHeight: 1.6 }}>
           {description}
         </p>
       </div>
@@ -163,67 +168,24 @@ const FeatureScene: React.FC<{ title: string; description: string; icon: string 
   )
 }
 
-const CTAScene: React.FC = () => {
+// Scene 6: Outro - Static end screen with real URL
+const OutroScene: React.FC = () => {
   const frame = useCurrentFrame()
-  const { fps } = useVideoConfig()
-
-  const pulse = Math.sin(frame * 0.1) * 0.05 + 1
-
-  const opacity = interpolate(frame, [0, 30], [0, 1], {
-    extrapolateRight: "clamp",
-  })
+  const opacity = interpolate(frame, [0, 30], [0, 1], { extrapolateRight: "clamp" })
 
   return (
-    <AbsoluteFill
-      style={{
-        backgroundColor: "#0a0a0a",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <AbsoluteFill style={{ backgroundColor: THEME.background, justifyContent: "center", alignItems: "center" }}>
       <div style={{ textAlign: "center", opacity }}>
-        <h2
-          style={{
-            fontSize: 80,
-            fontWeight: 700,
-            color: "#fff",
-            marginBottom: 40,
-            fontFamily: "system-ui, sans-serif",
-          }}
-        >
-          Join the Investigation
-        </h2>
-
-        <div
-          style={{
-            display: "inline-block",
-            padding: "24px 64px",
-            backgroundColor: "#22c55e",
-            borderRadius: 12,
-            transform: `scale(${pulse})`,
-          }}
-        >
-          <span
-            style={{
-              fontSize: 36,
-              fontWeight: 600,
-              color: "#000",
-              fontFamily: "system-ui, sans-serif",
-            }}
-          >
+        <Logo size="lg" />
+        
+        <div style={{ marginTop: 60, padding: "20px 48px", border: `1px solid ${THEME.border}`, borderRadius: 8, display: "inline-block" }}>
+          <span style={{ fontSize: 32, color: THEME.foreground, fontFamily: "monospace" }}>
             redactedagency.xyz
           </span>
         </div>
 
-        <p
-          style={{
-            fontSize: 28,
-            color: "#71717a",
-            marginTop: 40,
-            fontFamily: "system-ui, sans-serif",
-          }}
-        >
-          Open source • No gatekeeping • AI welcome
+        <p style={{ fontSize: 20, color: THEME.muted, marginTop: 40, fontFamily: "monospace" }}>
+          // FORENSIC EVIDENCE NETWORK
         </p>
       </div>
     </AbsoluteFill>
@@ -232,51 +194,51 @@ const CTAScene: React.FC = () => {
 
 export const PromoVideo: React.FC = () => {
   return (
-    <AbsoluteFill style={{ backgroundColor: "#0a0a0a" }}>
-      {/* Title - 0 to 5 seconds */}
+    <AbsoluteFill style={{ backgroundColor: THEME.background }}>
+      {/* Scene 1: Title (0-5s) */}
       <Sequence from={0} durationInFrames={150}>
         <TitleScene />
       </Sequence>
 
-      {/* Feature 1 - 5 to 10 seconds */}
+      {/* Scene 2: Feature - Redaction Safe (5-10s) - from hero-section.tsx line 46-50 */}
       <Sequence from={150} durationInFrames={150}>
         <FeatureScene
-          icon="📄"
-          title="Upload Evidence"
-          description="Declassified documents, court records, leaked files. All processed with forensic-grade precision."
+          iconSymbol="�"
+          title="Redaction Safe"
+          description="HARD RULES enforced by validation layer. Never identify or infer redacted individuals."
         />
       </Sequence>
 
-      {/* Feature 2 - 10 to 15 seconds */}
+      {/* Scene 3: Feature - Chunk Citations (10-15s) - from hero-section.tsx line 51-55 */}
       <Sequence from={300} durationInFrames={150}>
         <FeatureScene
-          icon="🤖"
-          title="AI Analysis"
-          description="AI agents extract claims, verify citations, and surface connections humans might miss."
+          iconSymbol="📄"
+          title="Chunk Citations"
+          description="Every claim traced to source text. DOC_ID.PAGE.START-END format for verification."
         />
       </Sequence>
 
-      {/* Feature 3 - 15 to 20 seconds */}
+      {/* Scene 4: Feature - Multi-Agent (15-20s) - from hero-section.tsx line 56-60 */}
       <Sequence from={450} durationInFrames={150}>
         <FeatureScene
-          icon="🔗"
-          title="Collaborative Investigation"
-          description="Humans and AI work together. Discuss findings, challenge claims, build the truth."
+          iconSymbol="🤖"
+          title="Multi-Agent"
+          description="Claude, GPT-4, Gemini cooperation. Bring your own API keys. No gatekeeping."
         />
       </Sequence>
 
-      {/* Feature 4 - 20 to 25 seconds */}
+      {/* Scene 5: Feature - Audit Grade (20-25s) - from hero-section.tsx line 61-65 */}
       <Sequence from={600} durationInFrames={150}>
         <FeatureScene
-          icon="🛡️"
-          title="Redaction Safe"
-          description="Strict rules prevent identifying redacted individuals. Evidence integrity preserved."
+          iconSymbol="�"
+          title="Audit Grade"
+          description="Independently verifiable output. Content hashing and forensic chain of custody."
         />
       </Sequence>
 
-      {/* CTA - 25 to 30 seconds */}
+      {/* Scene 6: Outro (25-30s) */}
       <Sequence from={750} durationInFrames={150}>
-        <CTAScene />
+        <OutroScene />
       </Sequence>
     </AbsoluteFill>
   )
