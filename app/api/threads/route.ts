@@ -17,6 +17,7 @@ export async function GET(req: Request) {
       posts:posts(count)
     `)
     .order("is_pinned", { ascending: false })
+    .order("upvotes", { ascending: false })
     .order("last_activity_at", { ascending: false })
     .limit(limit)
   

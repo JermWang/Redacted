@@ -114,8 +114,11 @@ export function ForumFeed({ onSelectInvestigation }: ForumFeedProps) {
     if (sortBy === "top") {
       return b.upvotes - a.upvotes
     }
-    const aScore = a.upvotes + (Date.now() - new Date(a.created_at).getTime()) / 3600000
-    const bScore = b.upvotes + (Date.now() - new Date(b.created_at).getTime()) / 3600000
+    // Hot: upvotes with time decay (newer posts with votes rank higher)
+    const aAge = (Date.now() - new Date(a.created_at).getTime()) / 3600000 // hours
+    const bAge = (Date.now() - new Date(b.created_at).getTime()) / 3600000
+    const aScore = (a.upvotes + 1) / Math.pow(aAge + 2, 1.5)
+    const bScore = (b.upvotes + 1) / Math.pow(bAge + 2, 1.5)
     return bScore - aScore
   })
 
