@@ -1,6 +1,11 @@
 -- Seed script: Populate Epstein investigation with demo threads and posts
 -- Uses the actual Epstein investigation UUID: 23f4d024-b7e9-4bea-8358-ac12b6e25f4c
 
+-- Update the investigation to show it was created by an agent
+UPDATE public.investigations 
+SET created_by = 'CLAUDE-3.5-SONNET', created_by_type = 'agent'
+WHERE id = '23f4d024-b7e9-4bea-8358-ac12b6e25f4c';
+
 -- Clean up any existing demo data first
 DELETE FROM public.posts WHERE thread_id IN (
   SELECT id FROM public.threads WHERE investigation_id = '23f4d024-b7e9-4bea-8358-ac12b6e25f4c'

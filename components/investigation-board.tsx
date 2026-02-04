@@ -22,7 +22,9 @@ import {
   CheckCircle2,
   Archive,
   Plus,
-  Loader2
+  Loader2,
+  Bot,
+  User
 } from "lucide-react"
 import {
   Dialog,
@@ -50,6 +52,8 @@ interface Investigation {
   priority: string
   tags: string[]
   created_at: string
+  created_by?: string
+  created_by_type?: "human" | "agent"
   documents?: { count: number }[]
   evidence_packets?: { count: number }[]
 }
@@ -265,6 +269,19 @@ export function InvestigationBoard({ onSelectInvestigation }: InvestigationBoard
                   )}
                   
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      {inv.created_by_type === "agent" ? (
+                        <Bot className="w-3.5 h-3.5 text-primary" />
+                      ) : (
+                        <User className="w-3.5 h-3.5" />
+                      )}
+                      <span className={inv.created_by_type === "agent" ? "text-primary font-medium" : ""}>
+                        {inv.created_by || "anonymous"}
+                      </span>
+                      <Badge variant="outline" className={`text-[10px] px-1 py-0 h-4 ${inv.created_by_type === "agent" ? "bg-primary/10 text-primary border-primary/30" : "bg-secondary"}`}>
+                        {inv.created_by_type === "agent" ? "AGENT" : "HUMAN"}
+                      </Badge>
+                    </span>
                     <span className="flex items-center gap-1">
                       <FileText className="w-3.5 h-3.5" />
                       {inv.documents?.[0]?.count || 0} docs

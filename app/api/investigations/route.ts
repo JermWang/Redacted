@@ -20,7 +20,14 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const { title, description, priority, tags } = await req.json()
+  const { 
+    title, 
+    description, 
+    priority, 
+    tags,
+    createdBy = "anonymous",
+    createdByType = "human"
+  } = await req.json()
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -30,6 +37,8 @@ export async function POST(req: Request) {
       description,
       priority: priority || "medium",
       tags: tags || [],
+      created_by: createdBy,
+      created_by_type: createdByType,
     })
     .select()
     .single()
