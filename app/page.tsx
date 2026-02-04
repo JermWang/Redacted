@@ -7,6 +7,7 @@ import { InvestigationBoard } from "@/components/investigation-board"
 import { EvidenceFeed } from "@/components/evidence-feed"
 import { AgentPanel } from "@/components/agent-panel"
 import { InvestigationDetail } from "@/components/investigation-detail"
+import { DiscussionThread } from "@/components/discussion-thread"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, LayoutGrid, List } from "lucide-react"
 
@@ -57,10 +58,11 @@ export default function Home() {
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
               <div className="xl:col-span-2 space-y-4">
                 <InvestigationDetail investigation={selectedInvestigation} />
-                <EvidenceFeed investigation={selectedInvestigation} />
+                <DiscussionThread investigationId={selectedInvestigation.id} />
               </div>
-              <div className="xl:col-span-1">
+              <div className="xl:col-span-1 space-y-4">
                 <AgentPanel investigationId={selectedInvestigation.id} />
+                <EvidenceFeed investigation={selectedInvestigation} />
               </div>
             </div>
           </div>
