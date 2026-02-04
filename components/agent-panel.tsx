@@ -115,9 +115,13 @@ export function AgentPanel({ investigationId }: AgentPanelProps) {
   const runBackgroundAgents = async () => {
     setIsRunningAgents(true)
     try {
+      const byokHeaders = getFirstAvailableHeaders()
       await fetch("/api/agents/background", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...byokHeaders,
+        },
         body: JSON.stringify({
           investigationId,
           agentTypes: ["claude", "gpt", "gemini"]
