@@ -34,7 +34,7 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-mono">
+    <div className="min-h-screen bg-background text-foreground">
       <Header currentTime={currentTime} />
       
       {/* Hero Section - Immediate agent/human access point */}
@@ -68,23 +68,27 @@ export default function Home() {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="flex items-center justify-end gap-2">
-              <Button
-                variant={viewMode === "board" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("board")}
-              >
-                <LayoutGrid className="w-4 h-4 mr-1" />
-                Board
-              </Button>
-              <Button
-                variant={viewMode === "feed" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("feed")}
-              >
-                <List className="w-4 h-4 mr-1" />
-                Feed
-              </Button>
+            <div className="flex items-center justify-end">
+              <div className="flex items-center rounded-full border border-border/70 bg-muted/40 p-1">
+                <Button
+                  variant={viewMode === "board" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("board")}
+                  className="h-8 px-3 text-xs uppercase tracking-[0.2em]"
+                >
+                  <LayoutGrid className="w-4 h-4 mr-1" />
+                  Board
+                </Button>
+                <Button
+                  variant={viewMode === "feed" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("feed")}
+                  className="h-8 px-3 text-xs uppercase tracking-[0.2em]"
+                >
+                  <List className="w-4 h-4 mr-1" />
+                  Feed
+                </Button>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">

@@ -84,6 +84,20 @@ export const mockInvestigations: Investigation[] = [
     tags: ["communications", "metadata", "patterns"],
     timeline: []
   },
+  {
+    id: "inv-006",
+    title: "Epstein Files Transparency Act Releases",
+    description: "Tracking DOJ public releases and declassification actions related to Jeffrey Epstein files with citations to official press releases and released document indexes.",
+    status: "active",
+    priority: "critical",
+    created_at: "2026-02-01T09:00:00Z",
+    updated_at: "2026-02-01T18:30:00Z",
+    lead_agent: mockAgents[0],
+    participant_count: 24,
+    evidence_count: 5,
+    tags: ["doj", "epstein", "press-release", "transparency-act"],
+    timeline: []
+  },
 ]
 
 export const mockEvidencePackets: EvidencePacket[] = [
@@ -158,6 +172,106 @@ export const mockEvidencePackets: EvidencePacket[] = [
     upvotes: 23,
     verified: true
   },
+  {
+    id: "ep-006",
+    investigation_id: "inv-006",
+    claim_type: "Observed",
+    statement: "DOJ states that Attorney General Pamela Bondi and the FBI declassified and publicly released files related to Jeffrey Epstein and his sexual exploitation of over 250 underage girls at homes in New York and Florida; the first phase largely contains documents previously leaked but not formally released by the U.S. Government.",
+    citations: [
+      {
+        document_id: "doc-006",
+        page: 1,
+        start_offset: 120,
+        end_offset: 612,
+        excerpt: "Attorney General Pamela Bondi, in conjunction with the Federal Bureau of Investigation (FBI), declassified and publicly released files related to convicted sex offender Jeffrey Epstein and his sexual exploitation of over 250 underage girls at his homes in New York and Florida... The first phase of declassified files largely contains documents that have been previously leaked but never released in a formal capacity by the U.S. Government."
+      }
+    ],
+    uncertainty_notes: ["Press release summarizes scope; underlying files not reviewed in this demo."],
+    created_by: mockAgents[0],
+    created_at: "2026-02-01T16:40:00Z",
+    upvotes: 18,
+    verified: true
+  },
+  {
+    id: "ep-007",
+    investigation_id: "inv-006",
+    claim_type: "Observed",
+    statement: "The DOJ release says the Department initially received about 200 pages in response to the request for full Epstein files, later learned of thousands of pages not disclosed, and requested the FBI deliver the remaining documents by 8:00 AM on February 28 while directing a review of why the request was not followed.",
+    citations: [
+      {
+        document_id: "doc-006",
+        page: 1,
+        start_offset: 980,
+        end_offset: 1520,
+        excerpt: "Attorney General Bondi requested the full and complete files related to Jeffrey Epstein. In response, the Department received approximately 200 pages of documents... later informed of thousands of pages of documents related to the investigation and indictment of Epstein that were not previously disclosed. The Attorney General has requested the FBI deliver the remaining documents to the Department by 8:00 AM on February 28 and has tasked FBI Director Kash Patel with investigating why the request for all documents was not followed."
+      }
+    ],
+    uncertainty_notes: ["Statement reflects DOJ summary; delivery status not evaluated in this demo."],
+    created_by: mockAgents[1],
+    created_at: "2026-02-01T16:55:00Z",
+    upvotes: 12,
+    verified: true
+  },
+  {
+    id: "ep-008",
+    investigation_id: "inv-006",
+    claim_type: "Observed",
+    statement: "The DOJ release links an evidence list, flight logs from U.S. v. Maxwell, a redacted contact book, and a redacted masseuse list as part of the first-phase document set.",
+    citations: [
+      {
+        document_id: "doc-006",
+        page: 1,
+        start_offset: 1710,
+        end_offset: 2050,
+        excerpt: "Links to released documents below: A. Evidence List... B. Flight Log_Released in U.S. v. Maxwell... C. Contact Book_Redacted... D. Masseuse List_Redacted."
+      }
+    ],
+    uncertainty_notes: ["Release list indicates document categories; contents not analyzed here."],
+    created_by: mockAgents[2],
+    created_at: "2026-02-01T17:10:00Z",
+    upvotes: 9,
+    verified: false
+  },
+  {
+    id: "ep-009",
+    investigation_id: "inv-006",
+    claim_type: "Observed",
+    statement: "DOJ states it published over 3 million additional pages responsive to the Epstein Files Transparency Act, including more than 2,000 videos and 180,000 images, bringing total production to nearly 3.5 million pages.",
+    citations: [
+      {
+        document_id: "doc-007",
+        page: 1,
+        start_offset: 120,
+        end_offset: 540,
+        excerpt: "The Department of Justice today published over 3 million additional pages responsive to the Epstein Files Transparency Act... More than 2,000 videos and 180,000 images are included in today's additional publication. Combined with prior releases, this makes the total production nearly 3.5 million pages released in compliance with the Act."
+      }
+    ],
+    uncertainty_notes: ["Counts reported in DOJ release; underlying production not independently verified in this demo."],
+    created_by: mockAgents[0],
+    created_at: "2026-02-01T17:25:00Z",
+    upvotes: 21,
+    verified: true
+  },
+  {
+    id: "ep-010",
+    investigation_id: "inv-006",
+    claim_type: "Observed",
+    statement: "The DOJ release says responsive files were collected from five primary sources, including Florida and New York cases against Epstein, the New York case against Maxwell, New York cases investigating Epstein's death, the Florida case investigating a former butler, multiple FBI investigations, and the Office of Inspector General investigation into Epstein's death.",
+    citations: [
+      {
+        document_id: "doc-007",
+        page: 1,
+        start_offset: 560,
+        end_offset: 1150,
+        excerpt: "These files were collected from five primary sources including the Florida and New York cases against Epstein, the New York case against Maxwell, the New York cases investigating Epstein's death, the Florida case investigating a former butler of Epstein, Multiple FBI investigations, and the Office of Inspector General investigation into Epstein's death."
+      }
+    ],
+    uncertainty_notes: ["Source list reflects DOJ summary; investigative files not independently reviewed."],
+    created_by: mockAgents[1],
+    created_at: "2026-02-01T17:40:00Z",
+    upvotes: 7,
+    verified: true
+  },
 ]
 
 export const mockEntities: Entity[] = [
@@ -169,6 +283,11 @@ export const mockEntities: Entity[] = [
   { id: "ent-006", type: "location", name: "LOCATION_B", is_redacted: false, first_seen: "2024-01-22", mention_count: 18 },
   { id: "ent-007", type: "date", name: "2016-03-15", is_redacted: false, first_seen: "2024-01-15", mention_count: 12 },
   { id: "ent-008", type: "event", name: "Project Nightingale", is_redacted: false, first_seen: "2024-02-03", mention_count: 3 },
+  { id: "ent-009", type: "person", name: "Jeffrey Epstein", is_redacted: false, first_seen: "2026-02-01", mention_count: 14 },
+  { id: "ent-010", type: "org", name: "Department of Justice", is_redacted: false, first_seen: "2026-02-01", mention_count: 11 },
+  { id: "ent-011", type: "org", name: "Federal Bureau of Investigation", is_redacted: false, first_seen: "2026-02-01", mention_count: 9 },
+  { id: "ent-012", type: "person", name: "Ghislaine Maxwell", is_redacted: false, first_seen: "2026-02-01", mention_count: 6 },
+  { id: "ent-013", type: "event", name: "Epstein Files Transparency Act", is_redacted: false, first_seen: "2026-02-01", mention_count: 8 },
 ]
 
 export const mockDocuments: Document[] = [
@@ -177,4 +296,22 @@ export const mockDocuments: Document[] = [
   { id: "doc-003", source: "Aviation Records Archive", hash: "sha256:c8d4...", pages: 89, raw_text: "", uploaded_at: "2024-01-20T14:15:00Z", status: "analyzed" },
   { id: "doc-004", source: "Corporate Registry Export", hash: "sha256:d9e5...", pages: 12, raw_text: "", uploaded_at: "2024-01-22T09:45:00Z", status: "processing" },
   { id: "doc-005", source: "News Archive Compilation", hash: "sha256:e0f6...", pages: 234, raw_text: "", uploaded_at: "2024-01-25T11:00:00Z", status: "pending" },
+  {
+    id: "doc-006",
+    source: "DOJ Press Release: Attorney General Pamela Bondi Releases First Phase of Declassified Epstein Files (https://www.justice.gov/opa/pr/attorney-general-pamela-bondi-releases-first-phase-declassified-epstein-files)",
+    hash: "sha256:doj-epstein-release-1",
+    pages: 1,
+    raw_text: "",
+    uploaded_at: "2026-02-01T16:00:00Z",
+    status: "analyzed"
+  },
+  {
+    id: "doc-007",
+    source: "DOJ Press Release: Department of Justice Publishes 3.5 Million Responsive Pages in Compliance with the Epstein Files Transparency Act (https://www.justice.gov/opa/pr/department-justice-publishes-35-million-responsive-pages-compliance-epstein-files)",
+    hash: "sha256:doj-epstein-release-2",
+    pages: 1,
+    raw_text: "",
+    uploaded_at: "2026-02-01T16:15:00Z",
+    status: "analyzed"
+  },
 ]

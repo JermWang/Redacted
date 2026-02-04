@@ -69,23 +69,22 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
   ]
 
   return (
-    <div className="relative overflow-hidden border-b border-border bg-gradient-to-b from-background to-secondary/20">
-      {/* ASCII Shader Background - Smooth calming plasma */}
-      <AsciiShader 
-        mode="plasma" 
-        speed={0.4} 
-        density={1.2} 
-        opacity={0.25}
+    <div className="relative overflow-hidden border-b border-border bg-background">
+      {/* ASCII Shader Background - Calibrated for monochrome */}
+      <AsciiShader
+        mode="plasma"
+        speed={0.3}
+        density={1}
+        opacity={0.12}
         bloom={false}
-        color="#22c55e"
+        color="#9ca3af"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/40" />
-      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background" />
       
-      <div className="relative max-w-6xl mx-auto px-4 py-12 lg:py-16">
-        <div className="text-center space-y-6">
+      <div className="relative max-w-7xl mx-auto px-4 py-14 lg:py-20">
+        <div className="text-center lg:text-left space-y-6">
           {/* System Badge */}
-          <div className="flex justify-center gap-2">
+          <div className="flex flex-wrap justify-center lg:justify-start gap-2">
             <Badge variant="outline" className="font-mono text-xs px-3 py-1">
               <Sparkles className="w-3 h-3 mr-1" />
               HUMAN + AGENT HYBRID
@@ -97,32 +96,33 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
           </div>
 
           {/* Title */}
-          <h1 className="text-5xl lg:text-7xl font-black tracking-tight flex items-center justify-center">
+          <h1 className="text-4xl lg:text-6xl font-black tracking-tight flex items-center justify-center lg:justify-start">
             RE<span className="bg-foreground w-24 lg:w-36 h-10 lg:h-14 mx-1 inline-block"></span>ED
           </h1>
           
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base lg:text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0">
             Forensic-grade evidence processing with redaction safety. 
             Built for human investigators and AI agents working together.
           </p>
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap justify-center gap-3 pt-4">
-            {onGetStarted && (
-              <Button size="lg" onClick={onGetStarted}>
-                <FileText className="w-4 h-4 mr-2" />
-                Start Investigation
-              </Button>
-            )}
-
-            {/* AGENT ACCESS BUTTON - Primary CTA for agents */}
-            <Dialog open={skillsOpen} onOpenChange={setSkillsOpen}>
-              <DialogTrigger asChild>
-                <Button size="lg" variant="outline" className="border-primary/50 hover:bg-primary/10 font-mono">
+          <div className="pt-4 flex justify-center lg:justify-start">
+            <div className="inline-flex flex-wrap gap-3 rounded-xl border border-border/60 bg-card/60 p-3">
+              {onGetStarted && (
+                <Button size="lg" onClick={onGetStarted}>
                   <FileText className="w-4 h-4 mr-2" />
-                  skills.md
+                  Start Investigation
                 </Button>
-              </DialogTrigger>
+              )}
+
+              {/* AGENT ACCESS BUTTON - Primary CTA for agents */}
+              <Dialog open={skillsOpen} onOpenChange={setSkillsOpen}>
+                <DialogTrigger asChild>
+                  <Button size="lg" variant="outline" className="border-border/60 bg-background/60 font-mono">
+                    <FileText className="w-4 h-4 mr-2" />
+                    skills.md
+                  </Button>
+                </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2 font-mono">
@@ -211,21 +211,22 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
                   </Card>
                 </div>
               </DialogContent>
-            </Dialog>
+              </Dialog>
 
-            <Button size="lg" variant="ghost" asChild>
-              <a href="/skills.md" target="_blank" rel="noopener noreferrer">
-                <FileText className="w-4 h-4 mr-2" />
-                View Full Documentation
-              </a>
-            </Button>
+              <Button size="lg" variant="ghost" asChild>
+                <a href="/skills.md" target="_blank" rel="noopener noreferrer">
+                  <FileText className="w-4 h-4 mr-2" />
+                  View Full Documentation
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* Feature Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mt-12">
           {features.map((feature) => (
-            <Card key={feature.title} className="p-4 bg-secondary/30 border-border/50 hover:bg-secondary/50 transition-colors">
+            <Card key={feature.title} className="p-4 bg-card/60 border-border/60 shadow-sm hover:bg-card/80 transition-colors">
               <feature.icon className={`w-8 h-8 ${feature.color} mb-3`} />
               <h3 className="font-semibold text-sm">{feature.title}</h3>
               <p className="text-xs text-muted-foreground mt-1">{feature.description}</p>
@@ -234,18 +235,20 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
         </div>
 
         {/* Quick Stats */}
-        <div className="flex justify-center gap-8 mt-8 text-center">
-          <div>
-            <div className="text-2xl font-bold text-primary">6</div>
-            <div className="text-xs text-muted-foreground">HARD RULES</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-primary">3</div>
-            <div className="text-xs text-muted-foreground">AI AGENTS</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-primary">∞</div>
-            <div className="text-xs text-muted-foreground">CITATIONS</div>
+        <div className="mt-10 flex justify-center">
+          <div className="grid grid-cols-3 gap-6 rounded-xl border border-border/60 bg-card/60 px-6 py-4 text-center">
+            <div>
+              <div className="text-2xl font-bold text-foreground">6</div>
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Hard Rules</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-foreground">3</div>
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">AI Agents</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-foreground">∞</div>
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Citations</div>
+            </div>
           </div>
         </div>
       </div>
