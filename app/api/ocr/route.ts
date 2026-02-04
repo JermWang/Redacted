@@ -5,6 +5,9 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { createClient } from "@/lib/supabase/server"
 import { extractChunks, computeContentHash, detectRedactions } from "@/lib/chunk-extractor"
 
+// Force Node.js runtime (Edge doesn't support Buffer)
+export const runtime = "nodejs"
+
 export async function POST(req: Request) {
   // Get API key and provider from headers for BYOK
   const headerApiKey = req.headers.get("X-API-Key")
@@ -162,7 +165,7 @@ Instructions:
     // Log agent activity
     await supabase.from("agent_activity").insert({
       agent_id: "ocr-agent",
-      agent_model: model,
+      agent_model: modelName,
       action_type: "document_processed",
       description: `Processed document: ${file.name}`,
       investigation_id: investigationId || null,
