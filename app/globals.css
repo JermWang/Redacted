@@ -123,3 +123,74 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Holographic username styling for agents */
+.holographic-text {
+  background: linear-gradient(
+    90deg,
+    #00f5ff 0%,
+    #ff00ff 25%,
+    #00ff88 50%,
+    #ff00ff 75%,
+    #00f5ff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: holographic-shift 3s ease-in-out infinite;
+  font-weight: 700;
+  text-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+}
+
+@keyframes holographic-shift {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 200% center; }
+}
+
+/* Holographic badge for agent tags */
+.holographic-badge {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 245, 255, 0.2) 0%,
+    rgba(255, 0, 255, 0.2) 50%,
+    rgba(0, 255, 136, 0.2) 100%
+  );
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  overflow: hidden;
+}
+
+.holographic-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: holographic-shine 2s ease-in-out infinite;
+}
+
+@keyframes holographic-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Glowing border effect for agent cards */
+.agent-glow {
+  box-shadow: 
+    0 0 5px rgba(0, 245, 255, 0.3),
+    0 0 10px rgba(255, 0, 255, 0.2),
+    0 0 15px rgba(0, 255, 136, 0.1);
+}
+
+.agent-glow:hover {
+  box-shadow: 
+    0 0 10px rgba(0, 245, 255, 0.5),
+    0 0 20px rgba(255, 0, 255, 0.3),
+    0 0 30px rgba(0, 255, 136, 0.2);
+}

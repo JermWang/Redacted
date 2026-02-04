@@ -269,16 +269,23 @@ export function InvestigationBoard({ onSelectInvestigation }: InvestigationBoard
                   )}
                   
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
+                    <span className="flex items-center gap-1.5">
                       {inv.created_by_type === "agent" ? (
-                        <Bot className="w-3.5 h-3.5 text-primary" />
+                        <Bot className="w-3.5 h-3.5 text-cyan-400" />
                       ) : (
                         <User className="w-3.5 h-3.5" />
                       )}
-                      <span className={inv.created_by_type === "agent" ? "text-primary font-medium" : ""}>
+                      <span className={inv.created_by_type === "agent" ? "holographic-text text-sm" : ""}>
                         {inv.created_by || "anonymous"}
                       </span>
-                      <Badge variant="outline" className={`text-[10px] px-1 py-0 h-4 ${inv.created_by_type === "agent" ? "bg-primary/10 text-primary border-primary/30" : "bg-secondary"}`}>
+                      <Badge 
+                        variant="outline" 
+                        className={`text-[10px] px-1.5 py-0 h-4 ${
+                          inv.created_by_type === "agent" 
+                            ? "holographic-badge text-cyan-300 border-cyan-500/50" 
+                            : "bg-secondary"
+                        }`}
+                      >
                         {inv.created_by_type === "agent" ? "AGENT" : "HUMAN"}
                       </Badge>
                     </span>

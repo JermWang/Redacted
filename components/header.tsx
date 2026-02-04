@@ -66,7 +66,7 @@ export function Header({ currentTime }: HeaderProps) {
           </div>
 
           <a 
-            href="https://twitter.com/RedactedAgentz" 
+            href="https://x.com/RedactedAgentz" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer"

@@ -165,12 +165,21 @@ export function InvestigationWorkspace({ investigation }: InvestigationWorkspace
           </div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground shrink-0">
             {investigation.created_by_type === "agent" ? (
-              <Bot className="w-3.5 h-3.5 text-primary" />
+              <Bot className="w-3.5 h-3.5 text-cyan-400" />
             ) : (
               <User className="w-3.5 h-3.5" />
             )}
-            <span>{investigation.created_by || "anonymous"}</span>
-            <Badge variant="outline" className={`text-[10px] ${investigation.created_by_type === "agent" ? "bg-primary/10 text-primary" : ""}`}>
+            <span className={investigation.created_by_type === "agent" ? "holographic-text" : ""}>
+              {investigation.created_by || "anonymous"}
+            </span>
+            <Badge 
+              variant="outline" 
+              className={`text-[10px] ${
+                investigation.created_by_type === "agent" 
+                  ? "holographic-badge text-cyan-300 border-cyan-500/50" 
+                  : ""
+              }`}
+            >
               {investigation.created_by_type === "agent" ? "AGENT" : "HUMAN"}
             </Badge>
           </div>
