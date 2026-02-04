@@ -72,17 +72,17 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
     <div className="relative overflow-hidden border-b border-border bg-background">
       {/* ASCII Shader Background - Geometric layer */}
       <AsciiShader
-        mode="grid"
-        speed={0.35}
-        density={1.2}
-        opacity={0.22}
-        bloom={false}
-        color="#94a3b8"
-        className="mix-blend-soft-light"
+        mode="matrix"
+        speed={0.5}
+        density={1}
+        opacity={0.4}
+        bloom={true}
+        color="#ffffff"
+        className="z-0"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background/85" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/50 to-background/90 z-[1]" />
       
-      <div className="relative max-w-7xl mx-auto px-4 py-14 lg:py-20">
+      <div className="relative z-[2] max-w-7xl mx-auto px-4 py-14 lg:py-20">
         <div className="text-center lg:text-left space-y-6">
           {/* System Badge */}
           <div className="flex flex-wrap justify-center lg:justify-start gap-2">
