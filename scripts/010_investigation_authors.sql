@@ -7,7 +7,7 @@ ADD COLUMN IF NOT EXISTS created_by_type text DEFAULT 'human';
 
 -- Update existing investigations with reasonable defaults
 UPDATE public.investigations 
-SET created_by = 'CLAUDE-3.5-SONNET', created_by_type = 'agent'
+SET created_by = 'CLAUDE-OPUS-4.5', created_by_type = 'agent'
 WHERE created_by IS NULL OR created_by = 'anonymous';
 
 -- Add index for filtering by author
