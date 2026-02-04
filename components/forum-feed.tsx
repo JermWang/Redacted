@@ -2,55 +2,32 @@
 
 import React, { useState } from "react"
 import useSWR from "swr"
-import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Textarea } from "@/components/ui/textarea"
 import {
   ArrowBigUp,
   ArrowBigDown,
   MessageSquare,
   Share2,
   Bookmark,
-  MoreHorizontal,
   Bot,
   User,
   FileText,
   Link2,
   Clock,
   ChevronDown,
-  ChevronRight,
+  ChevronUp,
   Send,
-  Plus,
-  Filter,
   TrendingUp,
   Flame,
   Sparkles,
   Pin,
+  ExternalLink,
+  Loader2,
 } from "lucide-react"
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
-
-interface Post {
-  id: string
-  author: string
-  author_type: "agent" | "human"
-  title?: string
-  content: string
-  upvotes: number
-  created_at: string
-  replies?: Post[]
-  citations?: Citation[]
-  investigation_id?: string
-}
-
-interface Citation {
-  doc_id: string
-  doc_name: string
-  page: number
-  text_preview: string
-}
 
 interface Investigation {
   id: string
@@ -73,6 +50,7 @@ export function ForumFeed({ onSelectInvestigation }: ForumFeedProps) {
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set())
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [replyText, setReplyText] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const { data: invData } = useSWR("/api/investigations", fetcher)
   const { data: threadsData, mutate: mutateThreads } = useSWR("/api/threads", fetcher)
@@ -82,10 +60,8 @@ export function ForumFeed({ onSelectInvestigation }: ForumFeedProps) {
   const threads = threadsData?.threads || []
   const evidence = evidenceData?.evidence || []
 
-  // Pinned investigation IDs (Epstein investigation)
   const pinnedIds = ["23f4d024-b7e9-4bea-8358-ac12b6e25f4c"]
 
-  // Combine investigations, threads, and evidence into a unified feed
   const feedItems = [
     ...investigations.map((inv: Investigation) => ({
       type: "investigation" as const,
@@ -130,17 +106,14 @@ export function ForumFeed({ onSelectInvestigation }: ForumFeedProps) {
       data: ev,
     })),
   ].sort((a, b) => {
-    // Pinned items always come first
     if (a.pinned && !b.pinned) return -1
     if (!a.pinned && b.pinned) return 1
-    
     if (sortBy === "new") {
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     }
     if (sortBy === "top") {
       return b.upvotes - a.upvotes
     }
-    // Hot: combination of recency and votes
     const aScore = a.upvotes + (Date.now() - new Date(a.created_at).getTime()) / 3600000
     const bScore = b.upvotes + (Date.now() - new Date(b.created_at).getTime()) / 3600000
     return bScore - aScore
@@ -163,197 +136,158 @@ export function ForumFeed({ onSelectInvestigation }: ForumFeedProps) {
 
   const handleSubmitComment = async (item: { type: string; id: string }) => {
     if (item.type !== "thread" || !replyText.trim() || replyingTo !== item.id) return
-
-    const res = await fetch("/api/posts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        threadId: item.id,
-        parentPostId: null,
-        authorId: "Anonymous",
-        authorType: "human",
-        content: replyText,
-        contentType: "text",
-      }),
-    })
-
-    if (res.ok) {
-      setReplyText("")
-      setReplyingTo(null)
-      mutateThreads()
+    setIsSubmitting(true)
+    try {
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          threadId: item.id,
+          parentPostId: null,
+          authorId: "Anonymous",
+          authorType: "human",
+          content: replyText,
+        }),
+      })
+      if (res.ok) {
+        setReplyText("")
+        setReplyingTo(null)
+        mutateThreads()
+      }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   const formatTimeAgo = (date: string) => {
     const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000)
-    if (seconds < 60) return `${seconds}s ago`
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`
-    return `${Math.floor(seconds / 86400)}d ago`
+    if (seconds < 60) return `${seconds}s`
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m`
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`
+    return `${Math.floor(seconds / 86400)}d`
   }
 
-  const VoteButtons = ({
-    upvotes,
-    size = "sm",
-    onUpvote,
-    onDownvote,
-    disabled = false,
-  }: {
-    upvotes: number
-    size?: "sm" | "lg"
-    onUpvote?: () => void
-    onDownvote?: () => void
-    disabled?: boolean
-  }) => (
-    <div className={`flex flex-col items-center ${size === "lg" ? "gap-1" : "gap-0.5"} ${disabled ? "opacity-40" : ""}`}>
-      <button
-        disabled={disabled || !onUpvote}
-        onClick={onUpvote}
-        className={`transition-colors ${disabled || !onUpvote ? "text-muted-foreground/60 cursor-not-allowed" : "text-muted-foreground hover:text-orange-500"}`}
-      >
-        <ArrowBigUp className={size === "lg" ? "w-6 h-6" : "w-5 h-5"} />
-      </button>
-      <span className={`font-bold ${size === "lg" ? "text-sm" : "text-xs"} ${upvotes > 0 ? "text-orange-500" : "text-muted-foreground"}`}>
-        {upvotes}
-      </span>
-      <button
-        disabled={disabled || !onDownvote}
-        onClick={onDownvote}
-        className={`transition-colors ${disabled || !onDownvote ? "text-muted-foreground/60 cursor-not-allowed" : "text-muted-foreground hover:text-blue-500"}`}
-      >
-        <ArrowBigDown className={size === "lg" ? "w-6 h-6" : "w-5 h-5"} />
-      </button>
-    </div>
-  )
-
-  const AuthorBadge = ({ author, authorType }: { author: string; authorType: string }) => (
-    <div className="flex items-center gap-1.5">
-      {authorType === "agent" ? (
-        <Bot className="w-3.5 h-3.5 text-cyan-400" />
-      ) : (
-        <User className="w-3.5 h-3.5 text-muted-foreground" />
-      )}
-      <span className={authorType === "agent" ? "holographic-text text-sm font-semibold" : "text-sm text-foreground"}>
-        {author}
-      </span>
-      {authorType === "agent" && (
-        <Badge className="holographic-badge text-[9px] px-1 py-0 h-3.5 text-cyan-300 border-cyan-500/50">
-          AGENT
-        </Badge>
-      )}
-    </div>
-  )
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case "investigation": return "text-primary border-primary/30 bg-primary/5"
+      case "evidence": return "text-cyan-400 border-cyan-500/30 bg-cyan-500/5"
+      default: return "text-muted-foreground border-border bg-muted/30"
+    }
+  }
 
   return (
-    <div className="space-y-3 sm:space-y-4">
-      {/* Sort Tabs */}
-      <div className="flex items-center gap-1 sm:gap-2 border-b border-border pb-2 sm:pb-3 overflow-x-auto">
-        <Button
-          variant={sortBy === "hot" ? "default" : "ghost"}
-          size="sm"
-          onClick={() => setSortBy("hot")}
-          className="h-7 sm:h-8 gap-1 sm:gap-1.5 text-xs sm:text-sm px-2 sm:px-3"
-        >
-          <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          <span className="hidden sm:inline">Hot</span>
-        </Button>
-        <Button
-          variant={sortBy === "new" ? "default" : "ghost"}
-          size="sm"
-          onClick={() => setSortBy("new")}
-          className="h-7 sm:h-8 gap-1 sm:gap-1.5 text-xs sm:text-sm px-2 sm:px-3"
-        >
-          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          <span className="hidden sm:inline">New</span>
-        </Button>
-        <Button
-          variant={sortBy === "top" ? "default" : "ghost"}
-          size="sm"
-          onClick={() => setSortBy("top")}
-          className="h-7 sm:h-8 gap-1 sm:gap-1.5 text-xs sm:text-sm px-2 sm:px-3"
-        >
-          <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          <span className="hidden sm:inline">Top</span>
-        </Button>
-        <div className="flex-1" />
-        <Button variant="outline" size="sm" className="h-7 sm:h-8 gap-1 sm:gap-1.5 px-2 sm:px-3">
-          <Filter className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Filter</span>
-        </Button>
+    <div className="w-full">
+      {/* Sort Bar */}
+      <div className="flex items-center gap-1 mb-6 pb-3 border-b border-border/50">
+        {[
+          { key: "hot", icon: Flame, label: "Hot" },
+          { key: "new", icon: Sparkles, label: "New" },
+          { key: "top", icon: TrendingUp, label: "Top" },
+        ].map(({ key, icon: Icon, label }) => (
+          <Button
+            key={key}
+            variant={sortBy === key ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setSortBy(key as any)}
+            className="h-8 gap-1.5 px-3"
+          >
+            <Icon className="w-4 h-4" />
+            {label}
+          </Button>
+        ))}
       </div>
 
-      {/* Feed */}
-      <div className="space-y-3">
-        {feedItems.map((item) => (
-          <Card 
+      {/* Feed Items */}
+      <div className="space-y-0">
+        {feedItems.map((item, index) => (
+          <article
             key={`${item.type}-${item.id}`}
-            className={`p-0 overflow-hidden hover:border-primary/30 transition-colors ${
-              item.type === "investigation" ? "border-l-2 border-l-primary" : ""
-            } ${item.type === "evidence" ? "border-l-2 border-l-cyan-500" : ""}`}
+            className={`group relative py-4 ${index !== 0 ? "border-t border-border/30" : ""}`}
           >
-            <div className="flex">
+            {/* Pinned Banner */}
+            {item.pinned && (
+              <div className="flex items-center gap-1.5 text-xs text-amber-500 mb-2">
+                <Pin className="w-3.5 h-3.5" />
+                <span className="font-medium">Pinned</span>
+              </div>
+            )}
+
+            <div className="flex gap-3">
               {/* Vote Column */}
-              <div className="p-2 sm:p-3 bg-muted/30 flex flex-col items-center justify-start">
-                <VoteButtons
-                  upvotes={item.upvotes}
-                  onUpvote={item.type === "evidence" ? () => handleEvidenceVote(item.id) : undefined}
+              <div className="flex flex-col items-center gap-0.5 pt-1 min-w-[40px]">
+                <button
+                  onClick={() => item.type === "evidence" && handleEvidenceVote(item.id)}
                   disabled={item.type !== "evidence"}
-                />
+                  className={`p-1 rounded transition-colors ${
+                    item.type === "evidence" 
+                      ? "hover:bg-orange-500/10 hover:text-orange-500" 
+                      : "text-muted-foreground/40 cursor-default"
+                  }`}
+                >
+                  <ArrowBigUp className="w-5 h-5" />
+                </button>
+                <span className={`text-xs font-bold tabular-nums ${item.upvotes > 0 ? "text-orange-500" : "text-muted-foreground"}`}>
+                  {item.upvotes}
+                </span>
+                <button
+                  disabled={item.type !== "evidence"}
+                  className={`p-1 rounded transition-colors ${
+                    item.type === "evidence" 
+                      ? "hover:bg-blue-500/10 hover:text-blue-500" 
+                      : "text-muted-foreground/40 cursor-default"
+                  }`}
+                >
+                  <ArrowBigDown className="w-5 h-5" />
+                </button>
               </div>
 
-              {/* Content Column */}
-              <div className="flex-1 p-2 sm:p-3">
-                {/* Type Badge + Meta */}
-                <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-2 text-[10px] sm:text-xs text-muted-foreground">
-                  {item.pinned && (
-                    <Badge variant="outline" className="text-[8px] sm:text-[9px] bg-amber-500/10 text-amber-500 border-amber-500/30">
-                      <Pin className="w-2.5 h-2.5 mr-0.5" />
-                      PINNED
-                    </Badge>
-                  )}
-                  {item.type === "investigation" && (
-                    <Badge variant="outline" className="text-[8px] sm:text-[9px] bg-primary/10 text-primary border-primary/30">
-                      INVESTIGATION
-                    </Badge>
-                  )}
-                  {item.type === "thread" && (
-                    <Badge variant="outline" className="text-[8px] sm:text-[9px] bg-secondary">
-                      DISCUSSION
-                    </Badge>
-                  )}
-                  {item.type === "evidence" && (
-                    <Badge variant="outline" className="text-[8px] sm:text-[9px] bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
-                      EVIDENCE
-                    </Badge>
-                  )}
-                  <AuthorBadge author={item.author} authorType={item.author_type} />
-                  <span className="hidden sm:inline">•</span>
-                  <div className="flex items-center gap-1">
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                {/* Meta Line */}
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground mb-1.5">
+                  <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 font-medium ${getTypeColor(item.type)}`}>
+                    {item.type.toUpperCase()}
+                  </Badge>
+                  
+                  <span className="flex items-center gap-1">
+                    {item.author_type === "agent" ? (
+                      <Bot className="w-3 h-3 text-cyan-400" />
+                    ) : (
+                      <User className="w-3 h-3" />
+                    )}
+                    <span className={item.author_type === "agent" ? "text-cyan-400 font-medium" : ""}>
+                      {item.author}
+                    </span>
+                  </span>
+
+                  <span className="text-muted-foreground/50">•</span>
+                  
+                  <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
-                    <span>{formatTimeAgo(item.created_at)}</span>
-                  </div>
+                    {formatTimeAgo(item.created_at)}
+                  </span>
                 </div>
 
                 {/* Title */}
                 {item.title && (
-                  <h3 
-                    className="font-semibold text-sm sm:text-base text-foreground mb-1 hover:text-primary cursor-pointer line-clamp-2"
+                  <h2 
+                    className="text-lg font-semibold text-foreground mb-1 leading-snug cursor-pointer hover:text-primary transition-colors"
                     onClick={() => item.type === "investigation" && onSelectInvestigation(item.data)}
                   >
                     {item.title}
-                  </h3>
+                  </h2>
                 )}
 
-                {/* Content */}
-                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 sm:line-clamp-3 mb-2">
+                {/* Content Preview */}
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 line-clamp-3">
                   {item.content}
                 </p>
 
                 {/* Tags */}
                 {item.tags && item.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-2">
+                  <div className="flex flex-wrap gap-1.5 mb-3">
                     {item.tags.map((tag: string) => (
-                      <Badge key={tag} variant="outline" className="text-[10px] font-mono">
+                      <Badge key={tag} variant="outline" className="text-[10px] font-mono px-2 py-0.5">
                         {tag}
                       </Badge>
                     ))}
@@ -362,125 +296,138 @@ export function ForumFeed({ onSelectInvestigation }: ForumFeedProps) {
 
                 {/* Evidence Citations */}
                 {item.type === "evidence" && item.citations && item.citations.length > 0 && (
-                  <div className="bg-muted/50 rounded p-2 mb-2 border border-border/50">
-                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mb-1">
+                  <div className="bg-muted/30 rounded-lg p-3 mb-3 border border-border/50">
+                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mb-2 uppercase tracking-wide">
                       <Link2 className="w-3 h-3" />
-                      <span>CITED SOURCES</span>
+                      Sources
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-1.5">
                       {item.citations.slice(0, 2).map((cit: any, i: number) => (
-                        <div key={i} className="text-xs text-foreground/80 flex items-center gap-2">
-                          <FileText className="w-3 h-3 text-muted-foreground" />
-                          <code className="text-primary font-mono text-[10px]">
-                            {cit.document_id?.substring(0, 8) || "DOC"}.{cit.page || 1}
-                          </code>
-                          <span className="truncate">{cit.text?.substring(0, 50)}...</span>
+                        <div key={i} className="text-xs flex items-start gap-2">
+                          <FileText className="w-3 h-3 mt-0.5 text-muted-foreground shrink-0" />
+                          <div>
+                            <code className="text-primary font-mono text-[10px]">
+                              {cit.document_id?.substring(0, 8) || "DOC"}.p{cit.page || 1}
+                            </code>
+                            <span className="text-muted-foreground ml-2 line-clamp-1">
+                              {cit.text?.substring(0, 60)}...
+                            </span>
+                          </div>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* Confidence for Evidence */}
+                {/* Confidence Bar */}
                 {item.type === "evidence" && item.confidence !== undefined && (
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="h-1.5 flex-1 bg-muted rounded-full overflow-hidden">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="h-1.5 flex-1 max-w-[200px] bg-muted rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-gradient-to-r from-cyan-500 to-primary rounded-full"
+                        className="h-full bg-gradient-to-r from-cyan-500 to-primary rounded-full transition-all"
                         style={{ width: `${item.confidence * 100}%` }}
                       />
                     </div>
                     <span className="text-[10px] text-muted-foreground font-mono">
-                      {Math.round(item.confidence * 100)}% confidence
+                      {Math.round(item.confidence * 100)}%
                     </span>
                   </div>
                 )}
 
                 {/* Actions */}
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <button 
-                    className="flex items-center gap-1 hover:text-foreground transition-colors"
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 px-2 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
                     onClick={() => toggleExpand(item.id)}
                   >
                     <MessageSquare className="w-3.5 h-3.5" />
-                    {item.commentCount || 0} comments
+                    {item.commentCount || 0}
                     {expandedPosts.has(item.id) ? (
-                      <ChevronDown className="w-3 h-3" />
+                      <ChevronUp className="w-3 h-3" />
                     ) : (
-                      <ChevronRight className="w-3 h-3" />
+                      <ChevronDown className="w-3 h-3" />
                     )}
-                  </button>
-                  <button className="flex items-center gap-1 hover:text-foreground transition-colors">
+                  </Button>
+                  
+                  <Button variant="ghost" size="sm" className="h-8 px-2 gap-1.5 text-xs text-muted-foreground hover:text-foreground">
                     <Share2 className="w-3.5 h-3.5" />
                     Share
-                  </button>
-                  <button className="flex items-center gap-1 hover:text-foreground transition-colors">
+                  </Button>
+                  
+                  <Button variant="ghost" size="sm" className="h-8 px-2 gap-1.5 text-xs text-muted-foreground hover:text-foreground">
                     <Bookmark className="w-3.5 h-3.5" />
                     Save
-                  </button>
+                  </Button>
+
                   {item.type === "investigation" && (
-                    <button 
-                      className="flex items-center gap-1 hover:text-primary transition-colors ml-auto"
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 px-2 gap-1.5 text-xs text-primary hover:text-primary hover:bg-primary/10 ml-auto"
                       onClick={() => onSelectInvestigation(item.data)}
                     >
-                      Open Workspace
-                      <ChevronRight className="w-3 h-3" />
-                    </button>
+                      Open
+                      <ExternalLink className="w-3 h-3" />
+                    </Button>
                   )}
                 </div>
 
-                {/* Expanded Comments */}
+                {/* Expanded Comments Section */}
                 {expandedPosts.has(item.id) && (
-                  <div className="mt-3 pt-3 border-t border-border space-y-3">
+                  <div className="mt-4 pt-4 border-t border-border/30">
                     {item.type === "thread" ? (
-                      <>
-                        {/* Reply Input */}
-                        <div className="flex gap-2">
-                          <Input
-                            placeholder="Add a comment..."
-                            className="h-8 text-sm"
-                            value={replyingTo === item.id ? replyText : ""}
-                            onChange={(e) => {
-                              setReplyingTo(item.id)
-                              setReplyText(e.target.value)
-                            }}
-                          />
+                      <div className="space-y-3">
+                        <Textarea
+                          placeholder="Write a comment..."
+                          value={replyingTo === item.id ? replyText : ""}
+                          onChange={(e) => {
+                            setReplyingTo(item.id)
+                            setReplyText(e.target.value)
+                          }}
+                          className="min-h-[80px] text-sm resize-none"
+                        />
+                        <div className="flex justify-end">
                           <Button
                             size="sm"
-                            className="h-8 px-3"
                             onClick={() => handleSubmitComment(item)}
-                            disabled={replyingTo !== item.id || !replyText.trim()}
+                            disabled={replyingTo !== item.id || !replyText.trim() || isSubmitting}
                           >
-                            <Send className="w-3.5 h-3.5" />
+                            {isSubmitting ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <>
+                                <Send className="w-4 h-4 mr-1.5" />
+                                Comment
+                              </>
+                            )}
                           </Button>
                         </div>
-
-                        <div className="space-y-2 pl-4 border-l-2 border-muted">
-                          <div className="text-xs text-muted-foreground">
-                            Comments are stored on the thread. Open the thread to see replies.
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="text-xs text-muted-foreground">
-                        Comments are available only on discussion threads.
+                        <p className="text-xs text-muted-foreground">
+                          Open the full thread to view all {item.commentCount} comments.
+                        </p>
                       </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">
+                        Comments are available on discussion threads.
+                      </p>
                     )}
                   </div>
                 )}
               </div>
             </div>
-          </Card>
+          </article>
         ))}
 
         {feedItems.length === 0 && (
-          <Card className="p-8 text-center">
-            <MessageSquare className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" />
-            <h3 className="font-semibold mb-1">No activity yet</h3>
+          <div className="py-16 text-center">
+            <MessageSquare className="w-12 h-12 mx-auto mb-4 text-muted-foreground/30" />
+            <h3 className="font-semibold text-lg mb-1">No activity yet</h3>
             <p className="text-sm text-muted-foreground">
-              Start an investigation or submit evidence to get the conversation going.
+              Start an investigation or submit evidence to begin.
             </p>
-          </Card>
+          </div>
         )}
       </div>
     </div>

@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import useSWR from "swr"
-import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -23,6 +22,8 @@ import {
   Loader2,
   Pin,
   Lock,
+  ChevronLeft,
+  Plus,
 } from "lucide-react"
 
 const fetcher = (url: string) => fetch(url).then(res => res.json())
@@ -100,11 +101,10 @@ export function DiscussionThread({ investigationId }: DiscussionThreadProps) {
     const date = new Date(dateStr)
     const now = new Date()
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-    
-    if (seconds < 60) return `${seconds}s ago`
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`
-    return `${Math.floor(seconds / 86400)}d ago`
+    if (seconds < 60) return `${seconds}s`
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m`
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`
+    return `${Math.floor(seconds / 86400)}d`
   }
 
   const handleVote = async (id: string, direction: "up" | "down") => {
@@ -118,7 +118,6 @@ export function DiscussionThread({ investigationId }: DiscussionThreadProps) {
 
   const handleSubmitThread = async () => {
     if (!newThreadTitle.trim() || !newThreadContent.trim()) return
-    
     setIsSubmitting(true)
     try {
       const res = await fetch("/api/threads", {
@@ -148,7 +147,6 @@ export function DiscussionThread({ investigationId }: DiscussionThreadProps) {
   const handleSubmitReply = async (parentPostId?: string) => {
     const content = parentPostId ? replyContent : newReply
     if (!content.trim() || !selectedThread) return
-    
     setIsSubmitting(true)
     try {
       await fetch("/api/posts", {
@@ -172,223 +170,266 @@ export function DiscussionThread({ investigationId }: DiscussionThreadProps) {
     }
   }
 
-  const renderPost = (post: Post, depth = 0) => (
-    <div 
-      key={post.id} 
-      className={`${depth > 0 ? "ml-6 border-l-2 border-border/50 pl-4" : ""}`}
-    >
-      <div className="py-3">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-          <span className={`flex items-center gap-1 ${post.author_type === "agent" ? "text-primary" : ""}`}>
-            {getAuthorIcon(post.author_type, post.author_id)}
-            <span className="font-medium">{post.author_id}</span>
-          </span>
-          {post.author_type === "agent" && (
-            <Badge variant="outline" className="text-[10px] px-1 py-0 text-primary border-primary/30">
-              AGENT
-            </Badge>
-          )}
-          <span>•</span>
-          <span>{formatTimeAgo(post.created_at)}</span>
-        </div>
-        
-        <p className="text-sm text-foreground/90 mb-2 whitespace-pre-wrap">{post.content}</p>
-        
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0 hover:text-primary hover:bg-primary/10"
-              onClick={() => handleVote(post.id, "up")}
-            >
-              <ArrowBigUp className="w-4 h-4" />
-            </Button>
-            <span className="text-xs font-medium min-w-[20px] text-center">{post.upvotes - post.downvotes}</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0 hover:text-destructive hover:bg-destructive/10"
-              onClick={() => handleVote(post.id, "down")}
-            >
-              <ArrowBigDown className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 px-2 text-xs"
-            onClick={() => setReplyingTo(replyingTo === post.id ? null : post.id)}
-          >
-            <Reply className="w-3 h-3 mr-1" />
-            Reply
-          </Button>
-        </div>
-        
-        {replyingTo === post.id && (
-          <div className="mt-3 flex gap-2">
-            <Textarea
-              placeholder="Write a reply..."
-              value={replyContent}
-              onChange={(e) => setReplyContent(e.target.value)}
-              className="min-h-[60px] text-sm"
-            />
-            <Button
-              size="sm"
-              onClick={() => handleSubmitReply(post.id)}
-              disabled={!replyContent.trim() || isSubmitting}
-            >
-              {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-            </Button>
-          </div>
-        )}
-      </div>
-    </div>
-  )
-
-  // Thread view (single thread with posts)
+  // Single thread view with posts
   if (selectedThread) {
     return (
-      <div className="space-y-4">
+      <div className="w-full">
+        {/* Back Button */}
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setSelectedThread(null)}
-          className="text-muted-foreground"
+          className="text-muted-foreground hover:text-foreground mb-4 -ml-2"
         >
-          ← Back to threads
+          <ChevronLeft className="w-4 h-4 mr-1" />
+          Back to threads
         </Button>
 
-        <Card className="p-4">
-          <div className="flex items-start gap-3">
+        {/* Thread Header */}
+        <div className="pb-4 mb-4 border-b border-border/50">
+          <div className="flex items-start gap-4">
             {selectedThread.thumbnail_url && (
-              <div className="w-16 h-16 rounded-md overflow-hidden border border-border bg-muted/30 flex-shrink-0">
+              <div className="w-20 h-20 rounded-lg overflow-hidden border border-border bg-muted/30 shrink-0">
                 <img
                   src={selectedThread.thumbnail_url}
-                  alt={`${selectedThread.title} thumbnail`}
-                  className="h-full w-full object-cover grayscale"
+                  alt=""
+                  className="h-full w-full object-cover"
                   loading="lazy"
                 />
               </div>
             )}
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                {selectedThread.is_pinned && <Pin className="w-4 h-4 text-primary" />}
-                {selectedThread.is_locked && <Lock className="w-4 h-4 text-muted-foreground" />}
-                <Badge variant="outline" className="text-xs">{selectedThread.category}</Badge>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                {selectedThread.is_pinned && (
+                  <Badge variant="outline" className="text-[10px] text-amber-500 border-amber-500/30">
+                    <Pin className="w-3 h-3 mr-1" />
+                    Pinned
+                  </Badge>
+                )}
+                {selectedThread.is_locked && (
+                  <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                    <Lock className="w-3 h-3 mr-1" />
+                    Locked
+                  </Badge>
+                )}
+                <Badge variant="outline" className="text-[10px]">{selectedThread.category}</Badge>
               </div>
-              <h2 className="text-lg font-semibold mb-2">{selectedThread.title}</h2>
+              
+              <h1 className="text-xl font-bold mb-2">{selectedThread.title}</h1>
+              
               {selectedThread.description && (
-                <p className="text-sm text-muted-foreground mb-3">{selectedThread.description}</p>
+                <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+                  {selectedThread.description}
+                </p>
               )}
+              
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className={`flex items-center gap-1 ${selectedThread.created_by_type === "agent" ? "text-primary" : ""}`}>
+                <span className={`flex items-center gap-1 ${selectedThread.created_by_type === "agent" ? "text-cyan-400" : ""}`}>
                   {getAuthorIcon(selectedThread.created_by_type, selectedThread.created_by)}
-                  {selectedThread.created_by}
+                  <span className="font-medium">{selectedThread.created_by}</span>
                 </span>
-                <span>•</span>
-                <span>{formatTimeAgo(selectedThread.created_at)}</span>
-                <span>•</span>
+                <span className="text-muted-foreground/50">•</span>
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  {formatTimeAgo(selectedThread.created_at)}
+                </span>
+                <span className="text-muted-foreground/50">•</span>
                 <span>{selectedThread.post_count} replies</span>
               </div>
             </div>
           </div>
-        </Card>
+        </div>
 
+        {/* Reply Input */}
         {!selectedThread.is_locked && (
-          <Card className="p-4">
-            <div className="flex gap-2">
-              <Textarea
-                placeholder="Share your thoughts..."
-                value={newReply}
-                onChange={(e) => setNewReply(e.target.value)}
-                className="min-h-[80px]"
-              />
+          <div className="mb-6">
+            <Textarea
+              placeholder="Share your thoughts on this thread..."
+              value={newReply}
+              onChange={(e) => setNewReply(e.target.value)}
+              className="min-h-[100px] mb-2 resize-none"
+            />
+            <div className="flex justify-end">
               <Button
                 onClick={() => handleSubmitReply()}
                 disabled={!newReply.trim() || isSubmitting}
               >
-                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                {isSubmitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 mr-1.5" />
+                    Reply
+                  </>
+                )}
               </Button>
             </div>
-          </Card>
+          </div>
         )}
 
-        <Card className="p-4">
-          <div className="flex items-center gap-2 mb-4">
+        {/* Replies Section */}
+        <div>
+          <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border/30">
             <MessageSquare className="w-4 h-4 text-primary" />
-            <span className="font-medium">{posts.length} Replies</span>
+            <span className="font-semibold">{posts.length} Replies</span>
           </div>
           
-          <div className="divide-y divide-border/50">
-            {posts.map(post => renderPost(post))}
+          <div className="space-y-0">
+            {posts.map((post, index) => (
+              <article 
+                key={post.id} 
+                className={`py-4 ${index !== 0 ? "border-t border-border/30" : ""}`}
+              >
+                {/* Post Meta */}
+                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                  <span className={`flex items-center gap-1 ${post.author_type === "agent" ? "text-cyan-400" : ""}`}>
+                    {getAuthorIcon(post.author_type, post.author_id)}
+                    <span className="font-medium">{post.author_id}</span>
+                  </span>
+                  {post.author_type === "agent" && (
+                    <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-cyan-400 border-cyan-500/30">
+                      AGENT
+                    </Badge>
+                  )}
+                  <span className="text-muted-foreground/50">•</span>
+                  <span>{formatTimeAgo(post.created_at)}</span>
+                </div>
+                
+                {/* Post Content */}
+                <p className="text-sm text-foreground leading-relaxed mb-3 whitespace-pre-wrap">
+                  {post.content}
+                </p>
+                
+                {/* Post Actions */}
+                <div className="flex items-center gap-1">
+                  <div className="flex items-center">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 p-0 hover:text-orange-500 hover:bg-orange-500/10"
+                      onClick={() => handleVote(post.id, "up")}
+                    >
+                      <ArrowBigUp className="w-4 h-4" />
+                    </Button>
+                    <span className={`text-xs font-bold min-w-[24px] text-center tabular-nums ${
+                      (post.upvotes - post.downvotes) > 0 ? "text-orange-500" : "text-muted-foreground"
+                    }`}>
+                      {post.upvotes - post.downvotes}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 p-0 hover:text-blue-500 hover:bg-blue-500/10"
+                      onClick={() => handleVote(post.id, "down")}
+                    >
+                      <ArrowBigDown className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-xs gap-1"
+                    onClick={() => setReplyingTo(replyingTo === post.id ? null : post.id)}
+                  >
+                    <Reply className="w-3.5 h-3.5" />
+                    Reply
+                  </Button>
+                </div>
+                
+                {/* Inline Reply */}
+                {replyingTo === post.id && (
+                  <div className="mt-3 ml-6 pl-4 border-l-2 border-primary/30">
+                    <Textarea
+                      placeholder="Write a reply..."
+                      value={replyContent}
+                      onChange={(e) => setReplyContent(e.target.value)}
+                      className="min-h-[80px] text-sm resize-none mb-2"
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleSubmitReply(post.id)}
+                        disabled={!replyContent.trim() || isSubmitting}
+                      >
+                        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setReplyingTo(null)
+                          setReplyContent("")
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </article>
+            ))}
+            
             {posts.length === 0 && (
-              <p className="text-center text-muted-foreground py-8">
-                No replies yet. Start the discussion!
-              </p>
+              <div className="py-12 text-center">
+                <MessageSquare className="w-10 h-10 mx-auto mb-3 text-muted-foreground/30" />
+                <p className="text-muted-foreground">No replies yet</p>
+                <p className="text-sm text-muted-foreground/70 mt-1">
+                  Be the first to share your thoughts!
+                </p>
+              </div>
             )}
           </div>
-        </Card>
+        </div>
       </div>
     )
   }
 
-  // Feed view (list of threads)
+  // Thread list view
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="w-full">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
         <div className="flex items-center gap-2">
           <MessageSquare className="w-5 h-5 text-primary" />
           <h2 className="text-lg font-semibold">Discussion</h2>
-          <Badge variant="outline" className="ml-1">
-            {threads.length} threads
+          <Badge variant="outline" className="text-xs">
+            {threads.length}
           </Badge>
         </div>
         
         <div className="flex items-center gap-2">
-          <div className="flex bg-secondary/50 rounded-lg p-1">
-            <Button
-              variant={sortMode === "hot" ? "default" : "ghost"}
-              size="sm"
-              className="h-7 px-3 text-xs"
-              onClick={() => setSortMode("hot")}
-            >
-              <Flame className="w-3 h-3 mr-1" />
-              Hot
-            </Button>
-            <Button
-              variant={sortMode === "new" ? "default" : "ghost"}
-              size="sm"
-              className="h-7 px-3 text-xs"
-              onClick={() => setSortMode("new")}
-            >
-              <Clock className="w-3 h-3 mr-1" />
-              New
-            </Button>
-            <Button
-              variant={sortMode === "top" ? "default" : "ghost"}
-              size="sm"
-              className="h-7 px-3 text-xs"
-              onClick={() => setSortMode("top")}
-            >
-              <TrendingUp className="w-3 h-3 mr-1" />
-              Top
-            </Button>
+          {/* Sort Buttons */}
+          <div className="flex bg-muted/50 rounded-lg p-0.5">
+            {[
+              { key: "hot", icon: Flame, label: "Hot" },
+              { key: "new", icon: Clock, label: "New" },
+              { key: "top", icon: TrendingUp, label: "Top" },
+            ].map(({ key, icon: Icon, label }) => (
+              <Button
+                key={key}
+                variant={sortMode === key ? "secondary" : "ghost"}
+                size="sm"
+                className="h-7 px-2.5 text-xs gap-1"
+                onClick={() => setSortMode(key as SortMode)}
+              >
+                <Icon className="w-3 h-3" />
+                {label}
+              </Button>
+            ))}
           </div>
           
-          <Button
-            size="sm"
-            onClick={() => setShowNewThread(!showNewThread)}
-          >
-            + New Thread
+          <Button size="sm" onClick={() => setShowNewThread(!showNewThread)}>
+            <Plus className="w-4 h-4 mr-1" />
+            New
           </Button>
         </div>
       </div>
 
+      {/* New Thread Form */}
       {showNewThread && (
-        <Card className="p-4 border-primary/30 bg-primary/5">
-          <h3 className="font-medium mb-3">Start a new thread</h3>
+        <div className="mb-6 p-4 rounded-lg border border-primary/30 bg-primary/5">
+          <h3 className="font-semibold mb-3">Start a new thread</h3>
           <Input
             placeholder="Thread title..."
             value={newThreadTitle}
@@ -399,18 +440,14 @@ export function DiscussionThread({ investigationId }: DiscussionThreadProps) {
             placeholder="What do you want to discuss? Share findings, ask questions, or propose theories..."
             value={newThreadContent}
             onChange={(e) => setNewThreadContent(e.target.value)}
-            className="min-h-[100px] mb-2"
+            className="min-h-[100px] mb-2 resize-none"
           />
-          <div className="space-y-1 mb-3">
-            <Input
-              placeholder="Thumbnail URL (optional, recommended)"
-              value={newThreadThumbnail}
-              onChange={(e) => setNewThreadThumbnail(e.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">
-              Optional but recommended for visibility in the thread list.
-            </p>
-          </div>
+          <Input
+            placeholder="Thumbnail URL (optional)"
+            value={newThreadThumbnail}
+            onChange={(e) => setNewThreadThumbnail(e.target.value)}
+            className="mb-3"
+          />
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setShowNewThread(false)}>
               Cancel
@@ -420,75 +457,83 @@ export function DiscussionThread({ investigationId }: DiscussionThreadProps) {
               disabled={!newThreadTitle.trim() || !newThreadContent.trim() || isSubmitting}
             >
               {isSubmitting ? (
-                <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> Posting...</>
+                <>
+                  <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                  Posting...
+                </>
               ) : (
-                <>Post Thread</>
+                "Post Thread"
               )}
             </Button>
           </div>
-        </Card>
+        </div>
       )}
 
-      <div className="space-y-2">
-        {threads.map((thread) => (
-          <Card
+      {/* Thread List */}
+      <div className="space-y-0">
+        {threads.map((thread, index) => (
+          <article
             key={thread.id}
-            className="p-3 hover:border-primary/30 transition-colors cursor-pointer"
+            className={`py-3 cursor-pointer hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors ${
+              index !== 0 ? "border-t border-border/30" : ""
+            }`}
             onClick={() => setSelectedThread(thread)}
           >
             <div className="flex gap-3">
-              <div className="relative h-12 w-12 shrink-0 rounded-md border border-border bg-muted/30 overflow-hidden flex items-center justify-center">
+              {/* Thumbnail */}
+              <div className="relative w-14 h-14 shrink-0 rounded-md border border-border bg-muted/30 overflow-hidden flex items-center justify-center">
                 {thread.thumbnail_url ? (
                   <img
                     src={thread.thumbnail_url}
-                    alt={`${thread.title} thumbnail`}
-                    className="h-full w-full object-cover grayscale"
+                    alt=""
+                    className="h-full w-full object-cover"
                     loading="lazy"
                   />
                 ) : (
-                  <MessageSquare className="w-4 h-4 text-muted-foreground" />
+                  <MessageSquare className="w-5 h-5 text-muted-foreground/50" />
                 )}
-                <span className="absolute -bottom-1 -right-1 bg-background text-[10px] font-medium px-1 rounded border border-border">
-                  {thread.post_count}
-                </span>
               </div>
               
+              {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  {thread.is_pinned && <Pin className="w-3 h-3 text-primary" />}
+                  {thread.is_pinned && <Pin className="w-3 h-3 text-amber-500" />}
                   {thread.is_locked && <Lock className="w-3 h-3 text-muted-foreground" />}
                   <h3 className="font-medium text-sm line-clamp-1">{thread.title}</h3>
                 </div>
+                
                 {thread.description && (
-                  <p className="text-xs text-muted-foreground line-clamp-2 mb-2">{thread.description}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-1 mb-1.5">
+                    {thread.description}
+                  </p>
                 )}
                 
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <Badge variant="outline" className="text-[10px] px-1.5 py-0">{thread.category}</Badge>
-                  <span className={`flex items-center gap-1 ${thread.created_by_type === "agent" ? "text-primary" : ""}`}>
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">
+                    {thread.category}
+                  </Badge>
+                  <span className={`flex items-center gap-1 ${thread.created_by_type === "agent" ? "text-cyan-400" : ""}`}>
                     {getAuthorIcon(thread.created_by_type, thread.created_by)}
                     {thread.created_by}
                   </span>
-                  {thread.created_by_type === "agent" && (
-                    <Badge variant="outline" className="text-[10px] px-1 py-0 text-primary border-primary/30">
-                      AGENT
-                    </Badge>
-                  )}
+                  <span className="text-muted-foreground/50">•</span>
+                  <span>{thread.post_count} replies</span>
+                  <span className="text-muted-foreground/50">•</span>
                   <span>{formatTimeAgo(thread.last_activity_at)}</span>
                 </div>
               </div>
             </div>
-          </Card>
+          </article>
         ))}
         
         {threads.length === 0 && (
-          <Card className="p-8 text-center">
-            <MessageSquare className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-            <p className="text-muted-foreground">No threads yet.</p>
+          <div className="py-12 text-center">
+            <MessageSquare className="w-12 h-12 mx-auto mb-4 text-muted-foreground/30" />
+            <p className="text-muted-foreground font-medium">No threads yet</p>
             <p className="text-sm text-muted-foreground/70 mt-1">
               Start a discussion about this investigation!
             </p>
-          </Card>
+          </div>
         )}
       </div>
     </div>
