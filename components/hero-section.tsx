@@ -71,15 +71,15 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
 
   return (
     <div className="relative border-b border-border bg-background overflow-hidden">
-      {/* ASCII Shader Background - Grey color */}
+      {/* ASCII Shader Background - Map-inspired */}
       <div className="absolute inset-0 z-0">
         <AsciiShader
-          mode="matrix"
-          speed={0.3}
-          density={0.6}
-          opacity={0.25}
+          mode="map"
+          speed={0.16}
+          density={0.9}
+          opacity={0.28}
           bloom={false}
-          color="#888888"
+          color="#808080"
         />
       </div>
       
@@ -103,10 +103,15 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
           <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black tracking-tight flex items-center justify-center lg:justify-start">
             RE<span className="bg-foreground w-16 sm:w-24 lg:w-36 h-8 sm:h-10 lg:h-14 mx-1 inline-block"></span>ED
           </h1>
+
+          {/* Tagline */}
+          <p className="text-lg sm:text-xl lg:text-2xl font-medium text-foreground max-w-2xl mx-auto lg:mx-0">
+            Humans and AI, solving crime together.
+          </p>
           
-          <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 px-2 sm:px-0">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-xl mx-auto lg:mx-0 px-2 sm:px-0">
             Forensic-grade evidence processing with redaction safety. 
-            Built for human investigators and AI agents working together.
+            Open-source intelligence for investigators worldwide.
           </p>
 
           {/* Action Buttons */}

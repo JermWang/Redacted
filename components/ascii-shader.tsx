@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback } from "react"
 
 interface AsciiShaderProps {
-  mode?: "waves" | "spiral" | "plasma" | "tunnel" | "grid" | "pulse" | "moire" | "metaballs" | "matrix"
+  mode?: "waves" | "spiral" | "plasma" | "tunnel" | "grid" | "pulse" | "moire" | "metaballs" | "map" | "matrix"
   speed?: number
   density?: number
   opacity?: number
@@ -14,9 +14,16 @@ interface AsciiShaderProps {
 
 const NUMBER_RAMP = "0123456789"
 const ASCII_RAMP = " .:+*#%@@@"
+const MAP_RAMP = " .:-=+*#%@"
 const TARGET_FRAME_TIME = 16
 const ADAPTIVE_THRESHOLD = 20
 const ADAPTIVE_SAMPLE_COUNT = 10
+
+const getRamp = (mode: AsciiShaderProps["mode"]) => {
+  if (mode === "waves" || mode === "matrix") return NUMBER_RAMP
+  if (mode === "map") return MAP_RAMP
+  return ASCII_RAMP
+}
 
 export function AsciiShader({
   mode = "waves",
@@ -46,9 +53,8 @@ export function AsciiShader({
     lastTime: 0,
   })
 
-  // Create glyph atlas with numbers
-  const createAtlas = useCallback((cellW: number, cellH: number, useNumbers: boolean): HTMLCanvasElement => {
-    const ramp = useNumbers ? NUMBER_RAMP : ASCII_RAMP
+  // Create glyph atlas with custom ramp
+  const createAtlas = useCallback((cellW: number, cellH: number, ramp: string): HTMLCanvasElement => {
     const atlas = document.createElement("canvas")
     atlas.width = cellW * ramp.length
     atlas.height = cellH
@@ -152,6 +158,26 @@ export function AsciiShader({
       const flow = Math.sin(x * 3 - t * 0.15) * 0.2
       return (wave1 + wave2 + flow + 1) / 2 * 0.7
     },
+    map: (x: number, y: number, t: number): number => {
+      const driftX = x + Math.sin(t * 0.03) * 0.15
+      const driftY = y + Math.cos(t * 0.025) * 0.12
+
+      const terrain =
+        Math.sin(driftX * 2.1 + t * 0.05) * 0.45 +
+        Math.cos(driftY * 1.9 - t * 0.04) * 0.35 +
+        Math.sin((driftX + driftY) * 1.4 + t * 0.03) * 0.25 +
+        Math.sin(Math.sqrt(driftX * driftX + driftY * driftY) * 3.2 - t * 0.02) * 0.2
+
+      const base = (terrain + 1.35) / 2.7
+      const contour = Math.exp(-Math.pow(((base * 7.5) % 1) - 0.5, 2) * 60)
+      const lat = Math.exp(-Math.pow(Math.sin((driftY + t * 0.02) * 4), 2) * 70)
+      const lon = Math.exp(-Math.pow(Math.sin((driftX - t * 0.015) * 4), 2) * 70)
+      const grid = Math.max(lat, lon)
+      const route = Math.exp(-Math.pow(driftY - Math.sin(driftX * 1.6 + t * 0.06) * 0.22, 2) * 45)
+
+      const brightness = base * 0.55 + contour * 0.3 + grid * 0.25 + route * 0.2
+      return Math.min(1, Math.max(0, brightness))
+    },
   }
 
   // Main render function
@@ -186,8 +212,7 @@ export function AsciiShader({
 
     const { cols, rows, cellSize, atlas, glyphWidth, glyphHeight, brightnessBuffer, indexBuffer, time } = state
     const field = fields[mode]
-    const useNumbers = mode === "waves" || mode === "matrix"
-    const ramp = useNumbers ? NUMBER_RAMP : ASCII_RAMP
+    const ramp = getRamp(mode)
     
     // Calculate brightness for each cell
     let idx = 0
@@ -267,9 +292,8 @@ export function AsciiShader({
     
     state.glyphWidth = state.cellSize
     state.glyphHeight = state.cellSize
-    // Use numbers for waves/matrix modes, ASCII for others
-    const useNumbers = mode === "waves" || mode === "matrix"
-    state.atlas = createAtlas(state.glyphWidth, state.glyphHeight, useNumbers)
+    const ramp = getRamp(mode)
+    state.atlas = createAtlas(state.glyphWidth, state.glyphHeight, ramp)
   }, [createAtlas, mode])
 
   // Handle resize

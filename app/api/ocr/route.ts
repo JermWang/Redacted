@@ -7,8 +7,19 @@ import { extractChunks, computeContentHash, detectRedactions } from "@/lib/chunk
 
 export async function POST(req: Request) {
   // Get API key and provider from headers for BYOK
-  const userApiKey = req.headers.get("X-API-Key")
-  const userProvider = req.headers.get("X-API-Provider") || "openai" // Default to OpenAI
+  const headerApiKey = req.headers.get("X-API-Key")
+  const rawProvider = req.headers.get("X-API-Provider")
+  const headerProvider: "openai" | "anthropic" | "google" =
+    rawProvider === "anthropic" || rawProvider === "google" || rawProvider === "openai"
+      ? rawProvider
+      : "openai"
+  const envKeys: Record<"openai" | "anthropic" | "google", string | undefined> = {
+    openai: process.env.OPENAI_API_KEY,
+    anthropic: process.env.ANTHROPIC_API_KEY,
+    google: process.env.GOOGLE_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+  }
+  const userApiKey = headerApiKey || envKeys[headerProvider]
+  const userProvider = headerProvider
 
   const formData = await req.formData()
   const file = formData.get("file") as File
@@ -19,8 +30,8 @@ export async function POST(req: Request) {
   }
 
   if (!userApiKey) {
-    return Response.json({ 
-      error: "No API key provided. Go to API Keys in the header and add your OpenAI, Anthropic, or Google AI key." 
+    return Response.json({
+      error: "No API key provided. Add a BYOK API key in the header UI or set a server env key (OPENAI_API_KEY / ANTHROPIC_API_KEY / GOOGLE_API_KEY)."
     }, { status: 400 })
   }
 

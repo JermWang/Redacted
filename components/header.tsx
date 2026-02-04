@@ -59,7 +59,7 @@ export function Header({ currentTime }: HeaderProps) {
 
           {/* Twitter */}
           <a 
-            href="https://x.com/RedactedAgentz" 
+            href="https://x.com/Redacted_Agents" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center text-muted-foreground hover:text-primary transition-colors cursor-pointer"
