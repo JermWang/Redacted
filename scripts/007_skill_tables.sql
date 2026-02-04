@@ -49,6 +49,38 @@ CREATE TABLE IF NOT EXISTS connections (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Ensure legacy connections table has required columns
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'connections' AND column_name = 'from_entity') THEN
+    ALTER TABLE connections ADD COLUMN from_entity TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'connections' AND column_name = 'to_entity') THEN
+    ALTER TABLE connections ADD COLUMN to_entity TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'connections' AND column_name = 'relationship') THEN
+    ALTER TABLE connections ADD COLUMN relationship TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'connections' AND column_name = 'strength') THEN
+    ALTER TABLE connections ADD COLUMN strength TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'connections' AND column_name = 'dates') THEN
+    ALTER TABLE connections ADD COLUMN dates TEXT[];
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'connections' AND column_name = 'citations') THEN
+    ALTER TABLE connections ADD COLUMN citations TEXT[];
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'connections' AND column_name = 'submitted_by') THEN
+    ALTER TABLE connections ADD COLUMN submitted_by TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'connections' AND column_name = 'submitted_by_type') THEN
+    ALTER TABLE connections ADD COLUMN submitted_by_type TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'connections' AND column_name = 'verified') THEN
+    ALTER TABLE connections ADD COLUMN verified BOOLEAN DEFAULT FALSE;
+  END IF;
+END $$;
+
 CREATE INDEX IF NOT EXISTS idx_connections_investigation ON connections(investigation_id);
 CREATE INDEX IF NOT EXISTS idx_connections_entities ON connections(from_entity, to_entity);
 
