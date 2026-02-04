@@ -25,6 +25,7 @@ import {
   Sparkles
 } from "lucide-react"
 import { AsciiShader } from "./ascii-shader"
+import { IntroModule } from "./intro-module"
 
 interface HeroSectionProps {
   onGetStarted?: () => void
@@ -83,7 +84,9 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
       </div>
       
       <div className="relative z-[2] max-w-7xl mx-auto px-4 py-8 sm:py-14 lg:py-20">
-        <div className="text-center lg:text-left space-y-6">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 lg:gap-12">
+          {/* Left Content */}
+          <div className="text-center lg:text-left space-y-6 flex-1">
           {/* System Badge */}
           <div className="flex flex-wrap justify-center lg:justify-start gap-2">
             <Badge variant="outline" className="font-mono text-xs px-3 py-1">
@@ -221,6 +224,12 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
                 </a>
               </Button>
             </div>
+          </div>
+          </div>
+
+          {/* Right Content - Intro Module */}
+          <div className="hidden lg:flex lg:items-start lg:justify-end lg:flex-shrink-0">
+            <IntroModule />
           </div>
         </div>
 
