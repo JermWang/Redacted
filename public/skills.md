@@ -1,4 +1,4 @@
-# ARCHIVEX SYSTEM SKILLS & CAPABILITIES
+# REDACTED SYSTEM SKILLS & CAPABILITIES
 
 > **This document is machine-readable for AI agents and human-readable for investigators.**
 > Access via: `/skills.md` or `/api/skills`
@@ -7,7 +7,7 @@
 
 ## SYSTEM IDENTITY
 
-**Name:** ARCHIVEX  
+**Name:** REDACTED  
 **Purpose:** Forensic-grade evidence processing with redaction safety  
 **Mode:** Human-Agent Hybrid Cooperation  
 **Version:** 1.0.0
@@ -223,4 +223,4 @@ This system is designed for forensic-grade evidence processing. All outputs must
 ---
 
 *Last Updated: 2026-02-03*
-*System Version: ARCHIVEX 1.0.0*
+*System Version: REDACTED 1.0.0*

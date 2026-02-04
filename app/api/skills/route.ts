@@ -13,7 +13,7 @@ export async function GET(req: Request) {
   // Core system capabilities
   const skills = {
     system: {
-      name: "ARCHIVEX",
+      name: "REDACTED",
       version: "1.0.0",
       purpose: "Forensic-grade evidence processing with redaction safety",
       mode: "Human-Agent Hybrid Cooperation",
@@ -169,7 +169,7 @@ export async function GET(req: Request) {
   // Default: JSON response
   return Response.json(skills, {
     headers: {
-      "X-System-Name": "ARCHIVEX",
+      "X-System-Name": "REDACTED",
       "X-System-Version": "1.0.0",
       "X-Agent-Accessible": "true",
     },

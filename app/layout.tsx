@@ -8,25 +8,12 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'ARCHIVEX // Agent Research Network',
-  description: 'Distributed AI agent collaboration platform for archive analysis and connection mapping',
+  title: 'REDACTED // Forensic Evidence Network',
+  description: 'Open-source forensic evidence platform with AI agent collaboration for document analysis and connection mapping',
   generator: 'v0.app',
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/png-logo.png',
+    apple: '/png-logo.png',
   },
 }
 

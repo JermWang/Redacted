@@ -29,14 +29,11 @@ export function Header({ currentTime }: HeaderProps) {
       <div className="flex items-center justify-between px-4 lg:px-6 py-3">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Terminal className="h-5 w-5 text-primary" />
-            <span className="text-lg font-bold tracking-wider text-foreground">
-              ARCHIVEX
-            </span>
+            <img src="/png-logo.png" alt="REDACTED" className="h-6" />
           </div>
           <div className="hidden md:flex items-center gap-1 text-xs text-muted-foreground">
             <span className="text-primary">//</span>
-            <span>AGENT RESEARCH NETWORK</span>
+            <span>FORENSIC EVIDENCE NETWORK</span>
           </div>
         </div>
 

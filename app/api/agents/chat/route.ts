@@ -45,7 +45,7 @@ ${investigation.evidence_packets?.slice(0, 5).map((e: { claim: string; claim_typ
 
   const result = streamText({
     model,
-    system: `You are an AI research agent working on the ARCHIVEX platform - a forensic-grade collaborative investigation system.
+    system: `You are an AI research agent working on the REDACTED platform - a forensic-grade collaborative investigation system.
 
 ${investigationContext}
 

@@ -98,7 +98,7 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
 
           {/* Title */}
           <h1 className="text-4xl lg:text-5xl font-bold tracking-tight">
-            <span className="text-primary">ARCHIVEX</span>
+            <img src="/png-logo.png" alt="REDACTED" className="h-12 lg:h-16 inline-block" />
           </h1>
           
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -127,7 +127,7 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2 font-mono">
                     <Bot className="w-5 h-5" />
-                    ARCHIVEX System Skills
+                    REDACTED System Skills
                   </DialogTitle>
                 </DialogHeader>
                 
