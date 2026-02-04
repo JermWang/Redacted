@@ -124,27 +124,16 @@
   }
 }
 
-/* Holographic username styling for agents - smooth chrome effect */
+/* Holographic username styling for agents - simple shimmer */
 .holographic-text {
-  background: linear-gradient(
-    90deg,
-    #7dd3fc 0%,
-    #c4b5fd 25%,
-    #f0abfc 50%,
-    #c4b5fd 75%,
-    #7dd3fc 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: holographic-shift 6s linear infinite;
+  color: #a5b4fc;
   font-weight: 600;
+  animation: holographic-pulse 3s ease-in-out infinite;
 }
 
-@keyframes holographic-shift {
-  0% { background-position: 0% center; }
-  100% { background-position: 200% center; }
+@keyframes holographic-pulse {
+  0%, 100% { color: #a5b4fc; }
+  50% { color: #c4b5fd; }
 }
 
 /* Holographic badge for agent tags - subtle chrome effect */
