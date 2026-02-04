@@ -1,6 +1,7 @@
 "use client"
 
-import { Radio, Shield, Twitter } from "lucide-react"
+import { Radio, Shield, Twitter, Copy, Check } from "lucide-react"
+import { useState } from "react"
 import { APIKeySettings } from "@/components/api-key-settings"
 import { AuthButton } from "@/components/auth-button"
 
@@ -8,7 +9,17 @@ interface HeaderProps {
   currentTime: Date | null
 }
 
+const CONTRACT_ADDRESS = "5oeo8RXapKgFjaKwAyZUiaKtvZs4sQP6nS6WUcFhpump"
+
 export function Header({ currentTime }: HeaderProps) {
+  const [copied, setCopied] = useState(false)
+
+  const copyCA = () => {
+    navigator.clipboard.writeText(CONTRACT_ADDRESS)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString("en-US", {
       hour12: false,
@@ -56,6 +67,16 @@ export function Header({ currentTime }: HeaderProps) {
             <Shield className="h-3 w-3 text-primary" />
             <span className="hidden sm:inline text-primary">SECURE</span>
           </div>
+
+          {/* Contract Address */}
+          <button
+            onClick={copyCA}
+            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer px-2 py-1 rounded border border-border hover:border-primary/50"
+            title="Copy Contract Address"
+          >
+            <span className="hidden sm:inline font-mono">CA</span>
+            {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+          </button>
 
           {/* Twitter */}
           <a 

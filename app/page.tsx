@@ -71,7 +71,7 @@ export default function Home() {
 
             {/* Right Sidebar - Agent Chat Toggle */}
             <aside className="hidden xl:block w-80 border-l border-border shrink-0">
-              <div className="sticky top-16 p-4 h-[calc(100vh-64px)]">
+              <div className="sticky top-16 p-4 h-[calc(100vh-64px)] overflow-y-auto">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-semibold text-sm flex items-center gap-2">
                     <Bot className="w-4 h-4 text-cyan-400" />
