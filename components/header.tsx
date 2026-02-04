@@ -1,7 +1,8 @@
 "use client"
 
-import { Activity, Radio, Shield, Twitter } from "lucide-react"
+import { Radio, Shield, Twitter } from "lucide-react"
 import { APIKeySettings } from "@/components/api-key-settings"
+import { AuthButton } from "@/components/auth-button"
 
 interface HeaderProps {
   currentTime: Date | null
@@ -63,6 +64,7 @@ export function Header({ currentTime }: HeaderProps) {
             <Twitter className="h-4 w-4" />
           </a>
 
+          <AuthButton />
           <APIKeySettings />
         </div>
       </div>
