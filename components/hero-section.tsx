@@ -68,7 +68,7 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
   ]
 
   return (
-    <div className="relative border-b border-border bg-neutral-900">
+    <div className="border-b border-border" style={{ backgroundColor: '#1a1a1a' }}>
       
       <div className="relative z-[2] max-w-7xl mx-auto px-4 py-14 lg:py-20">
         <div className="text-center lg:text-left space-y-6">
