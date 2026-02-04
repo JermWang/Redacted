@@ -70,13 +70,13 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
 
   return (
     <div className="relative overflow-hidden border-b border-border bg-gradient-to-b from-background to-secondary/20">
-      {/* ASCII Shader Background - Mathematical plasma with bloom */}
+      {/* ASCII Shader Background - Smooth calming plasma */}
       <AsciiShader 
         mode="plasma" 
-        speed={1.5} 
-        density={1.5} 
-        opacity={0.7}
-        bloom={true}
+        speed={0.4} 
+        density={1.2} 
+        opacity={0.25}
+        bloom={false}
         color="#22c55e"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/40" />

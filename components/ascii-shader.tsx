@@ -32,7 +32,7 @@ export function AsciiShader({
   const animationRef = useRef<number>(0)
   const stateRef = useRef({
     time: 0,
-    cellSize: 10,
+    cellSize: 16,
     cols: 0,
     rows: 0,
     atlas: null as HTMLCanvasElement | null,
@@ -90,14 +90,13 @@ export function AsciiShader({
     },
     
     plasma: (x: number, y: number, t: number): number => {
-      // Dramatic plasma with pulsing interference
-      const pulse = Math.sin(t * 2) * 0.3 + 0.7
-      const v1 = Math.sin(x * 8 + t * 2) * Math.cos(y * 6 - t)
-      const v2 = Math.sin(Math.sqrt((x * 2) ** 2 + (y * 2) ** 2) * 5 - t * 3)
-      const v3 = Math.sin((x + y) * 10 + t) * Math.sin((x - y) * 10 - t * 1.5)
-      const ripple = Math.sin(Math.sqrt(x * x + y * y) * 12 - t * 4) * 0.5
-      const warp = Math.sin(x * 4 + Math.sin(y * 3 + t) * 2) * Math.cos(y * 4 + Math.cos(x * 3 - t) * 2)
-      return Math.pow((v1 + v2 + v3 + ripple + warp + 5) / 10, 0.8) * pulse
+      // Gentle, smooth plasma - calming effect
+      const v1 = Math.sin(x * 3 + t * 0.5) * 0.5
+      const v2 = Math.sin(y * 2.5 + t * 0.4) * 0.5
+      const v3 = Math.sin((x + y) * 2 + t * 0.3) * 0.4
+      const dist = Math.sqrt(x * x + y * y)
+      const radial = Math.sin(dist * 3 - t * 0.6) * 0.3
+      return (v1 + v2 + v3 + radial + 1.7) / 3.4
     },
     
     tunnel: (x: number, y: number, t: number): number => {
