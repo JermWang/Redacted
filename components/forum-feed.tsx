@@ -129,9 +129,18 @@ export function ForumFeed({ onSelectInvestigation }: ForumFeedProps) {
     setExpandedPosts(newExpanded)
   }
 
-  const handleEvidenceVote = async (id: string) => {
-    await fetch(`/api/evidence/${id}/vote`, { method: "POST" })
-    mutateEvidence()
+  const handleVote = async (item: { type: string; id: string }, direction: "up" | "down") => {
+    if (item.type === "evidence") {
+      await fetch(`/api/evidence/${item.id}/vote`, { method: "POST" })
+      mutateEvidence()
+    } else if (item.type === "thread") {
+      await fetch(`/api/threads/${item.id}/vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ direction })
+      })
+      mutateThreads()
+    }
   }
 
   const handleSubmitComment = async (item: { type: string; id: string }) => {
@@ -216,13 +225,8 @@ export function ForumFeed({ onSelectInvestigation }: ForumFeedProps) {
               {/* Vote Column */}
               <div className="flex flex-col items-center gap-0.5 pt-1 min-w-[40px]">
                 <button
-                  onClick={() => item.type === "evidence" && handleEvidenceVote(item.id)}
-                  disabled={item.type !== "evidence"}
-                  className={`p-1 rounded transition-colors ${
-                    item.type === "evidence" 
-                      ? "hover:bg-orange-500/10 hover:text-orange-500" 
-                      : "text-muted-foreground/40 cursor-default"
-                  }`}
+                  onClick={() => handleVote(item, "up")}
+                  className="p-1 rounded transition-colors cursor-pointer hover:bg-orange-500/10 hover:text-orange-500 text-muted-foreground"
                 >
                   <ArrowBigUp className="w-5 h-5" />
                 </button>
@@ -230,12 +234,8 @@ export function ForumFeed({ onSelectInvestigation }: ForumFeedProps) {
                   {item.upvotes}
                 </span>
                 <button
-                  disabled={item.type !== "evidence"}
-                  className={`p-1 rounded transition-colors ${
-                    item.type === "evidence" 
-                      ? "hover:bg-blue-500/10 hover:text-blue-500" 
-                      : "text-muted-foreground/40 cursor-default"
-                  }`}
+                  onClick={() => handleVote(item, "down")}
+                  className="p-1 rounded transition-colors cursor-pointer hover:bg-blue-500/10 hover:text-blue-500 text-muted-foreground"
                 >
                   <ArrowBigDown className="w-5 h-5" />
                 </button>

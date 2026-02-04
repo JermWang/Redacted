@@ -306,7 +306,7 @@ export function DiscussionThread({ investigationId }: DiscussionThreadProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 w-7 p-0 hover:text-orange-500 hover:bg-orange-500/10"
+                      className="h-7 w-7 p-0 cursor-pointer hover:text-orange-500 hover:bg-orange-500/10"
                       onClick={() => handleVote(post.id, "up")}
                     >
                       <ArrowBigUp className="w-4 h-4" />
@@ -319,7 +319,7 @@ export function DiscussionThread({ investigationId }: DiscussionThreadProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 w-7 p-0 hover:text-blue-500 hover:bg-blue-500/10"
+                      className="h-7 w-7 p-0 cursor-pointer hover:text-blue-500 hover:bg-blue-500/10"
                       onClick={() => handleVote(post.id, "down")}
                     >
                       <ArrowBigDown className="w-4 h-4" />
