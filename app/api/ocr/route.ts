@@ -1,28 +1,15 @@
-"use server"
-
 import { generateText } from "ai"
+import { createAnthropic } from "@ai-sdk/anthropic"
 import { createClient } from "@/lib/supabase/server"
 import { extractChunks, computeContentHash, detectRedactions } from "@/lib/chunk-extractor"
-import { withRateLimit } from "@/lib/rate-limiter"
-import { resolveMoltbookIdentity } from "@/lib/moltbook"
 
 export async function POST(req: Request) {
-  // Resolve identity for rate limiting
-  const identity = await resolveMoltbookIdentity(req)
-  const isVerified = identity.status === "verified"
-  const agentIdFromIdentity = identity.status === "verified" ? identity.agent?.id : undefined
-
-  // Apply rate limiting (OCR is expensive, stricter limits)
-  const rateLimit = await withRateLimit(req, 'ocr_upload', {
-    isVerified,
-    agentId: agentIdFromIdentity,
-  })
-  if (!rateLimit.allowed) return rateLimit.response
+  // Get API key from header for BYOK
+  const userApiKey = req.headers.get("X-API-Key")
 
   const formData = await req.formData()
   const file = formData.get("file") as File
   const investigationId = formData.get("investigationId") as string
-  const model = (formData.get("model") as string) || "anthropic/claude-sonnet-4"
 
   if (!file) {
     return Response.json({ error: "No file provided" }, { status: 400 })
@@ -33,6 +20,10 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer()
     const base64 = Buffer.from(bytes).toString("base64")
     const mimeType = file.type || "image/png"
+
+    // Create provider with BYOK key
+    const provider = createAnthropic({ apiKey: userApiKey || undefined })
+    const model = provider("claude-sonnet-4-20250514")
 
     // Use AI Vision to extract text from image
     const { text: ocrText } = await generateText({
@@ -76,14 +67,17 @@ Instructions:
       .insert({
         investigation_id: investigationId || null,
         filename: file.name,
+        file_url: "", // Empty - we process directly without storage
+        file_type: file.type || "image/png",
         ocr_text: ocrText,
+        ocr_status: "completed",
         content_hash: contentHash,
-        page_count: 1, // Will be updated by chunk extraction
+        page_count: 1,
         status: "processed",
         metadata: {
           size: file.size,
           type: file.type,
-          model_used: model,
+          model_used: "claude-sonnet-4",
           processed_at: new Date().toISOString(),
           redaction_count: redactions.length,
         },

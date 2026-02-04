@@ -2,6 +2,7 @@
 
 import React, { useState } from "react"
 import useSWR from "swr"
+import { getAuthHeaders } from "@/lib/byok"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -122,12 +123,25 @@ export function InvestigationWorkspace({ investigation }: InvestigationWorkspace
         formData.append("file", file)
         formData.append("investigationId", investigation.id)
 
-        await fetch("/api/ocr", {
+        // Get BYOK headers for AI processing
+        const headers = getAuthHeaders("claude")
+
+        const res = await fetch("/api/ocr", {
           method: "POST",
+          headers,
           body: formData,
         })
+
+        if (!res.ok) {
+          const error = await res.json()
+          console.error("Upload failed:", error)
+          alert(`Upload failed: ${error.error || "Unknown error"}`)
+        }
       }
       mutateDocs()
+    } catch (err) {
+      console.error("Upload error:", err)
+      alert("Upload failed. Check console for details.")
     } finally {
       setUploading(false)
     }
