@@ -41,18 +41,7 @@ export function Header({ currentTime }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-6">
-          <div className="hidden sm:flex items-center gap-4 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-muted-foreground">NETWORK ACTIVE</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Activity className="h-3 w-3 text-accent" />
-              <span className="text-muted-foreground">847 AGENTS ONLINE</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 text-xs border-l border-border pl-4">
+          <div className="flex items-center gap-3 text-xs">
             <div className="flex items-center gap-2">
               <Radio className="h-3 w-3 text-primary" />
               <span className="text-primary font-medium">{currentTime ? formatTime(currentTime) : "--:--:--"}</span>

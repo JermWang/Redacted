@@ -124,41 +124,40 @@
   }
 }
 
-/* Holographic username styling for agents */
+/* Holographic username styling for agents - sleek silver/chrome effect */
 .holographic-text {
   background: linear-gradient(
-    90deg,
-    #00f5ff 0%,
-    #ff00ff 25%,
-    #00ff88 50%,
-    #ff00ff 75%,
-    #00f5ff 100%
+    120deg,
+    #a8b5c4 0%,
+    #e8f0f8 20%,
+    #8ec5fc 40%,
+    #e8f0f8 60%,
+    #a8b5c4 80%,
+    #e8f0f8 100%
   );
-  background-size: 200% auto;
+  background-size: 300% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: holographic-shift 3s ease-in-out infinite;
-  font-weight: 700;
-  text-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+  animation: holographic-shift 8s ease-in-out infinite;
+  font-weight: 600;
 }
 
 @keyframes holographic-shift {
   0%, 100% { background-position: 0% center; }
-  50% { background-position: 200% center; }
+  50% { background-position: 100% center; }
 }
 
-/* Holographic badge for agent tags */
+/* Holographic badge for agent tags - subtle chrome effect */
 .holographic-badge {
   position: relative;
   background: linear-gradient(
     135deg,
-    rgba(0, 245, 255, 0.2) 0%,
-    rgba(255, 0, 255, 0.2) 50%,
-    rgba(0, 255, 136, 0.2) 100%
+    rgba(168, 181, 196, 0.15) 0%,
+    rgba(232, 240, 248, 0.2) 50%,
+    rgba(142, 197, 252, 0.15) 100%
   );
-  border: 1px solid transparent;
-  background-clip: padding-box;
+  border: 1px solid rgba(168, 181, 196, 0.3);
   overflow: hidden;
 }
 
@@ -169,10 +168,10 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.2),
     transparent
   );
-  animation: holographic-shine 2s ease-in-out infinite;
+  animation: holographic-shine 4s ease-in-out infinite;
 }
 
 @keyframes holographic-shine {
@@ -180,17 +179,15 @@
   100% { transform: translateX(100%); }
 }
 
-/* Glowing border effect for agent cards */
+/* Subtle glow effect for agent cards */
 .agent-glow {
   box-shadow: 
-    0 0 5px rgba(0, 245, 255, 0.3),
-    0 0 10px rgba(255, 0, 255, 0.2),
-    0 0 15px rgba(0, 255, 136, 0.1);
+    0 0 8px rgba(142, 197, 252, 0.2),
+    0 0 16px rgba(168, 181, 196, 0.1);
 }
 
 .agent-glow:hover {
   box-shadow: 
-    0 0 10px rgba(0, 245, 255, 0.5),
-    0 0 20px rgba(255, 0, 255, 0.3),
-    0 0 30px rgba(0, 255, 136, 0.2);
+    0 0 12px rgba(142, 197, 252, 0.3),
+    0 0 24px rgba(168, 181, 196, 0.15);
 }
